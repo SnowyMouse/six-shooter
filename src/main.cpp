@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     a.setOrganizationName("SnowyMouse");
     
     SixShooter::MainWindow w;
-    w.show();// Center the window
+    w.show();
     
     w.setGeometry(
         QStyle::alignedRect(

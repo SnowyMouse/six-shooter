@@ -21,6 +21,8 @@ set(CMAKE_AUTORCC ON)
 add_executable(six-shooter
     src/main.cpp
     src/main_window.cpp
+    src/map_builder.cpp
+    src/console_box.cpp
 )
 
 target_link_libraries(six-shooter Qt5::Widgets Qt5::Multimedia)

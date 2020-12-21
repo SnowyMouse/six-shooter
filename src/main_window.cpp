@@ -13,6 +13,7 @@
 #include <QGroupBox>
 #include <QProcess>
 
+#include "map_builder.hpp"
 #include "main_window.hpp"
 
 namespace SixShooter {
@@ -201,11 +202,16 @@ namespace SixShooter {
     }
     
     void MainWindow::start_map_builder() {
-        std::printf("stub\n");
+        MapBuilder builder(this);
+        builder.exec();
     }
     
     void MainWindow::start_settings_editor() {
         std::printf("stub\n");
+    }
+    
+    std::vector<std::filesystem::path> MainWindow::get_tag_directories() const {
+        return this->tag_directories;
     }
     
     static std::filesystem::path executable_path(const std::filesystem::path &path, const char *executable) {
@@ -230,7 +236,7 @@ namespace SixShooter {
                executable_exists("invader-info");
     }
     
-    std::filesystem::path MainWindow::executable_path(const char *executable) {
+    std::filesystem::path MainWindow::executable_path(const char *executable) const {
         return ::SixShooter::executable_path(this->invader_path, executable);
     }
 }
