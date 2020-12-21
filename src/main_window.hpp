@@ -11,11 +11,17 @@ namespace SixShooter {
         MainWindow();
         
         std::filesystem::path executable_path(const char *executable) const;
-        std::vector<std::filesystem::path> get_tag_directories() const;
+        std::vector<std::filesystem::path> get_tags_directories() const;
+        std::filesystem::path get_maps_directory() const;
         
     private:
         bool find_invader();
-        void reload_tag_directories();
+        bool find_maps();
+        bool find_tags();
+        
+        void reload_tags_directories();
+        void reload_maps_directory();
+        void reload_invader_directory();
         
         void start_tag_editor(bool disable_safeguards);
         void start_tag_editor_safe();
@@ -26,6 +32,7 @@ namespace SixShooter {
         void start_settings_editor();
         
         std::filesystem::path invader_path;
-        std::vector<std::filesystem::path> tag_directories;
+        std::filesystem::path maps_directory;
+        std::vector<std::filesystem::path> tags_directories;
     };
 }
