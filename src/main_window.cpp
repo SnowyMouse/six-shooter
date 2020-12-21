@@ -49,39 +49,62 @@ namespace SixShooter {
         
         // Set up the GUI
         auto *window_widget = new QWidget(this);
-        auto *window_layout = new QHBoxLayout(window_widget);
+        auto *window_layout = new QVBoxLayout(window_widget);
+        
+        // Map building
+        {
+            auto *map_building_box = new QGroupBox("Map building", window_widget);
+            auto *map_building_layout = new QVBoxLayout(map_building_box);
+            
+            auto *map_builder = new QPushButton("Build a map", map_building_box);
+            connect(map_builder, &QPushButton::clicked, this, &MainWindow::start_map_builder);
+            map_building_layout->addWidget(map_builder);
+            
+            map_building_box->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
+            map_building_box->setLayout(map_building_layout);
+            window_layout->addWidget(map_building_box);
+        }
         
         // Tag editing options
         {
             auto *tag_editing_box = new QGroupBox("Tag editing", window_widget);
             auto *tag_editing_layout = new QVBoxLayout(tag_editing_box);
             
-            auto *tag_editor_safe = new QPushButton("Tag editor", tag_editing_box);
+            auto *tag_editor_safe = new QPushButton("Launch invader-edit-qt", tag_editing_box);
             connect(tag_editor_safe, &QPushButton::clicked, this, &MainWindow::start_tag_editor_safe);
             tag_editing_layout->addWidget(tag_editor_safe);
             
-            auto *tag_editor_unsafe = new QPushButton("Tag editor (Unsafe mode)", tag_editing_box);
+            auto *tag_editor_unsafe = new QPushButton("Launch invader-edit-qt (Unsafe mode)", tag_editing_box);
             connect(tag_editor_unsafe, &QPushButton::clicked, this, &MainWindow::start_tag_editor_unsafe);
             tag_editing_layout->addWidget(tag_editor_unsafe);
+            
+            auto *tag_extractor = new QPushButton("Extract tags", tag_editing_box);
+            connect(tag_extractor, &QPushButton::clicked, this, &MainWindow::start_tag_extractor);
+            tag_editing_layout->addWidget(tag_extractor);
             
             tag_editing_box->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
             tag_editing_box->setLayout(tag_editing_layout);
             window_layout->addWidget(tag_editing_box);
         }
         
+        // Map building
+        {
+            auto *settings_box = new QGroupBox("Settings", window_widget);
+            auto *settings_layout = new QVBoxLayout(settings_box);
+            
+            auto *settings_editor = new QPushButton("Edit settings", settings_box);
+            connect(settings_editor, &QPushButton::clicked, this, &MainWindow::start_settings_editor);
+            settings_layout->addWidget(settings_editor);
+            
+            settings_box->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
+            settings_box->setLayout(settings_layout);
+            window_layout->addWidget(settings_box);
+        }
+        
         // Finish up
         window_widget->setLayout(window_layout);
         this->setCentralWidget(window_widget);
-        
-        // Center the window
-        this->setGeometry(
-            QStyle::alignedRect(
-                Qt::LeftToRight,
-                Qt::AlignCenter,
-                this->rect().size(),
-                QGuiApplication::primaryScreen()->geometry()
-            )
-        );
+        this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
     }
     
     bool MainWindow::find_invader() {
@@ -171,6 +194,18 @@ namespace SixShooter {
     
     void MainWindow::start_tag_editor_unsafe() {
         return this->start_tag_editor(true);
+    }
+    
+    void MainWindow::start_tag_extractor() {
+        std::printf("stub\n");
+    }
+    
+    void MainWindow::start_map_builder() {
+        std::printf("stub\n");
+    }
+    
+    void MainWindow::start_settings_editor() {
+        std::printf("stub\n");
     }
     
     static std::filesystem::path executable_path(const std::filesystem::path &path, const char *executable) {

@@ -14,9 +14,13 @@ namespace SixShooter {
         bool find_invader();
         void reload_tag_directories();
         
-        void start_tag_editor(bool safe);
+        void start_tag_editor(bool disable_safeguards);
         void start_tag_editor_safe();
         void start_tag_editor_unsafe();
+        
+        void start_map_builder();
+        void start_tag_extractor();
+        void start_settings_editor();
         
         std::filesystem::path executable_path(const char *executable);
         
