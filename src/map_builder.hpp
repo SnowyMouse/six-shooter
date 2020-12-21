@@ -4,7 +4,8 @@
 #include <filesystem>
 #include <vector>
 
-class QPlainTextEdit;
+class QLineEdit;
+class QComboBox;
 
 namespace SixShooter {
     class MainWindow;
@@ -17,5 +18,9 @@ namespace SixShooter {
         MapBuilder(const MainWindow *main_window);
         const MainWindow *main_window;
         ConsoleBox *console_box;
+        QLineEdit *scenario_path;
+        QComboBox *engine;
+        
+        void compile_map();
     };
 }
