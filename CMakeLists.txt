@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-3.0-only
+
+# Require at least version 3.12
+cmake_minimum_required(VERSION 3.12)
+
+# Project name - You should change this if you're making a fork
+project("Six Shooter"
+    VERSION 0.1.0
+    DESCRIPTION "GUI frontend for Invader tools"
+    LANGUAGES C CXX
+)
+
+# Use C++17
+set(CMAKE_CXX_STANDARD 17)
+
+# Set up C++
+find_package(Qt5 COMPONENTS Core Widgets Multimedia REQUIRED)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+add_executable(six-shooter
+    src/main.cpp
+    src/main_window.cpp
+)
+
+target_link_libraries(six-shooter Qt5::Widgets Qt5::Multimedia)
+target_include_directories(six-shooter PUBLIC ${Qt5Widgets_INCLUDE_DIRS})
