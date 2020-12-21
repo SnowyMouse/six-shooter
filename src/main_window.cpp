@@ -37,6 +37,9 @@ namespace SixShooter {
         }
         this->invader_path = settings.value("invader_path").toString().toStdString();
         
+        // Do we have tag directories?
+        this->reload_tag_directories();
+        
         // Set up the GUI
         QWidget *widget = new QWidget(this);
         this->setCentralWidget(widget);
@@ -57,7 +60,7 @@ namespace SixShooter {
             // Initialize the file dialog
             QFileDialog qfd;
             qfd.setOptions(QFileDialog::Option::ReadOnly | QFileDialog::Option::ShowDirsOnly);
-            qfd.setWindowTitle("Find the folder where Invader is located");
+            qfd.setWindowTitle("Please find the folder where Invader is located");
             if(qfd.exec()) {
                 // Look for it!
                 auto path = qfd.selectedFiles()[0];
@@ -95,5 +98,36 @@ namespace SixShooter {
         return executable_exists("invader-build") && 
                executable_exists("invader-extract") &&
                executable_exists("invader-info");
+    }
+    
+    void MainWindow::reload_tag_directories() {
+        this->tag_directories.clear();
+        
+        QSettings settings;
+        auto setting = settings.value("tags_directories");
+        QStringList directory_list;
+        
+        // Load it!
+        if(setting.isNull() || setting.toStringList().size() == 0) {
+            // Initialize the file dialog
+            QFileDialog qfd;
+            qfd.setOptions(QFileDialog::Option::ReadOnly | QFileDialog::Option::ShowDirsOnly);
+            qfd.setWindowTitle("Please locate your tags directory");
+            if(qfd.exec()) {
+                directory_list = qfd.selectedFiles();
+                settings.setValue("tags_directories", directory_list);
+            }
+            else {
+                std::exit(EXIT_FAILURE);
+            }
+        }
+        else {
+            directory_list = setting.toStringList();
+        }
+        
+        // Add it!
+        for(auto &i : directory_list) {
+            this->tag_directories.emplace_back(i.toStdString());
+        }
     }
 }

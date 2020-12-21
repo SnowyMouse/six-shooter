@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include <filesystem>
+#include <vector>
 
 namespace SixShooter {
     class MainWindow : public QMainWindow {
@@ -11,8 +12,11 @@ namespace SixShooter {
         
     private:
         bool find_invader();
-        static bool invader_path_is_valid(const std::filesystem::path &path);
+        void reload_tag_directories();
         
         std::filesystem::path invader_path;
+        std::vector<std::filesystem::path> tag_directories;
+        
+        static bool invader_path_is_valid(const std::filesystem::path &path);
     };
 }
