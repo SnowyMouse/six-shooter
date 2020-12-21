@@ -7,10 +7,17 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <filesystem>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGroupBox>
+#include <QProcess>
 
 #include "main_window.hpp"
 
 namespace SixShooter {
+    static bool invader_path_is_valid(const std::filesystem::path &path);
+    
     MainWindow::MainWindow() {
         this->setWindowTitle("Six Shooter");
         
@@ -41,8 +48,30 @@ namespace SixShooter {
         this->reload_tag_directories();
         
         // Set up the GUI
-        QWidget *widget = new QWidget(this);
-        this->setCentralWidget(widget);
+        auto *window_widget = new QWidget(this);
+        auto *window_layout = new QHBoxLayout(window_widget);
+        
+        // Tag editing options
+        {
+            auto *tag_editing_box = new QGroupBox("Tag editing", window_widget);
+            auto *tag_editing_layout = new QVBoxLayout(tag_editing_box);
+            
+            auto *tag_editor_safe = new QPushButton("Tag editor", tag_editing_box);
+            connect(tag_editor_safe, &QPushButton::clicked, this, &MainWindow::start_tag_editor_safe);
+            tag_editing_layout->addWidget(tag_editor_safe);
+            
+            auto *tag_editor_unsafe = new QPushButton("Tag editor (Unsafe mode)", tag_editing_box);
+            connect(tag_editor_unsafe, &QPushButton::clicked, this, &MainWindow::start_tag_editor_unsafe);
+            tag_editing_layout->addWidget(tag_editor_unsafe);
+            
+            tag_editing_box->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
+            tag_editing_box->setLayout(tag_editing_layout);
+            window_layout->addWidget(tag_editing_box);
+        }
+        
+        // Finish up
+        window_widget->setLayout(window_layout);
+        this->setCentralWidget(window_widget);
         
         // Center the window
         this->setGeometry(
@@ -83,23 +112,6 @@ namespace SixShooter {
         }
     }
     
-    bool MainWindow::invader_path_is_valid(const std::filesystem::path &path) {
-        auto executable_exists = [&path](const char *executable) -> bool {
-            const char *executable_extension = "";
-            
-            #ifdef _WIN32
-            executable_extension = ".exe";
-            #endif
-            
-            return std::filesystem::exists(path / (std::string(executable) + executable_extension));
-        };
-        
-        // Check if these exist
-        return executable_exists("invader-build") && 
-               executable_exists("invader-extract") &&
-               executable_exists("invader-info");
-    }
-    
     void MainWindow::reload_tag_directories() {
         this->tag_directories.clear();
         
@@ -129,5 +141,61 @@ namespace SixShooter {
         for(auto &i : directory_list) {
             this->tag_directories.emplace_back(i.toStdString());
         }
+    }
+    
+    void MainWindow::start_tag_editor(bool disable_safeguards) {
+        // Process
+        QProcess process;
+        process.setProgram(this->executable_path("invader-edit-qt").string().c_str());
+        
+        // Set arguments
+        QStringList arguments;
+        for(auto &i : this->tag_directories) {
+            arguments << "--tags" << i.string().c_str();
+        }
+        if(disable_safeguards) {
+            arguments << "--no-safeguards";
+        }
+        
+        process.setArguments(arguments);
+        
+        // Begin
+        if(!process.startDetached()) {
+            std::printf("Failed to start invader-edit-qt... -.-\n");
+        }
+    }
+    
+    void MainWindow::start_tag_editor_safe() {
+        return this->start_tag_editor(false);
+    }
+    
+    void MainWindow::start_tag_editor_unsafe() {
+        return this->start_tag_editor(true);
+    }
+    
+    static std::filesystem::path executable_path(const std::filesystem::path &path, const char *executable) {
+        const char *executable_extension = "";
+        
+        #ifdef _WIN32
+        executable_extension = ".exe";
+        #endif
+        
+        return path / (std::string(executable) + executable_extension);
+    }
+    
+    static bool invader_path_is_valid(const std::filesystem::path &path) {
+        auto executable_exists = [&path](const char *executable) -> bool {
+            return std::filesystem::exists(executable_path(path, executable));
+        };
+        
+        // Check if these exist
+        return executable_exists("invader-build") && 
+               executable_exists("invader-edit-qt") &&
+               executable_exists("invader-extract") &&
+               executable_exists("invader-info");
+    }
+    
+    std::filesystem::path MainWindow::executable_path(const char *executable) {
+        return ::SixShooter::executable_path(this->invader_path, executable);
     }
 }
