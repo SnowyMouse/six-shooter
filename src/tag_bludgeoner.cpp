@@ -40,13 +40,13 @@ namespace SixShooter {
             { "--type", "incorrect-sound-buffer", "--all" }
         },
         {
-            "Change all model references to gbxmodel",
+            "Change model references to gbxmodel (base HEK tags need it)",
             5,
             "invader-refactor",
             { "--mode", "no-move", "--class", "model", "gbxmodel" }
         },
         {
-            "Change all gbxmodel references to model",
+            "Change gbxmodel references to model (Xbox porting)",
             5,
             "invader-refactor",
             { "--mode", "no-move", "--class", "gbxmodel", "model" }
