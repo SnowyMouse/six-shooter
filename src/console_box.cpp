@@ -19,6 +19,7 @@ namespace SixShooter {
         this->setMinimumWidth(QFontMetrics(font).horizontalAdvance('m') * 80);
         this->setMinimumHeight(QFontMetrics(font).ascent() * 24);
         this->setFont(font);
+        this->setWordWrapMode(QTextOption::WrapMode::WrapAnywhere);
         
         this->setStyleSheet("QTextEdit { background-color: #000; }");
     }
