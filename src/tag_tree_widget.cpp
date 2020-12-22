@@ -30,11 +30,13 @@ namespace SixShooter {
         QIcon file_icon = QFileIconProvider().icon(QFileIconProvider::File);
         
         for(auto &tag : tags) {
-            if(tag.endsWith(".none")) {
+            // Unknown
+            if(tag.trimmed().endsWith(".none")) {
                 continue;
             }
-            
+        
             QString formatted = tag.replace("/", "\\");
+            
             auto dir_split = formatted.split("\\");
             auto dir_split_length = dir_split.size();
             
