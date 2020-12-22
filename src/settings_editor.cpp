@@ -208,15 +208,17 @@ namespace SixShooter {
     }
     
     void SettingsEditor::refresh_tags_table() {
+        this->tags->clear();
         this->tags->setColumnCount(1);
-        this->tags->setRowCount(this->tags_paths.size());
         this->tags->horizontalHeader()->setStretchLastSection(true);
         this->tags->horizontalHeader()->hide();
         this->tags->verticalHeader()->hide();
+        this->tags->setRowCount(this->tags_paths.size());
+        this->tags->setSelectionMode(QAbstractItemView::SingleSelection);
         int index = 0;
         for(auto &i : this->tags_paths) {
             auto *item = new QTableWidgetItem(i.string().c_str());
-            this->tags->setItem(0, index++, item);
+            this->tags->setItem(index++, 0, item);
         }
     }
     
