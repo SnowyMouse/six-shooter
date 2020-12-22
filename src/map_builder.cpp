@@ -253,6 +253,7 @@ namespace SixShooter {
         QFileDialog qfd;
         qfd.setFileMode(QFileDialog::FileMode::ExistingFile);
         qfd.setWindowTitle("Locate the index file");
+        qfd.setNameFilter("Text file (*.txt)");
         if(qfd.exec()) {
             this->index_path->setText(qfd.selectedFiles()[0]);
         }

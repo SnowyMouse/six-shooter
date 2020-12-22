@@ -49,6 +49,7 @@ namespace SixShooter {
         QString get_map_info(const char *what) const;
         
         void double_clicked(QTreeWidgetItem *item, int column);
+        void generate_index_file();
         
         ~MapExtractor();
     };

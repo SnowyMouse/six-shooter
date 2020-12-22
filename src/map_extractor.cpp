@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QFileIconProvider>
 #include <QScreen>
+#include <QFileDialog>
 #include <QGuiApplication>
 
 #include "console_box.hpp"
@@ -70,6 +71,10 @@ namespace SixShooter {
             use_maps_preferences_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
             options_layout->addWidget(use_maps_preferences_label, 4, 0);
             options_layout->addWidget(this->use_maps_preferences, 4, 1);
+            
+            auto *generate_index_button = new QPushButton("Generate index file", options_widget);
+            connect(generate_index_button, &QPushButton::clicked, this, &MapExtractor::generate_index_file);
+            options_layout->addWidget(generate_index_button, 5, 1);
             
             // Set the layout
             options_widget->setLayout(options_layout);
@@ -248,6 +253,34 @@ namespace SixShooter {
             std::vector<std::string> filters;
             filters.emplace_back(data.toString().toStdString());
             this->extract_map(filters, r == 1, overwrite->isChecked());
+        }
+    }
+    
+    void MapExtractor::generate_index_file() {
+        QFileDialog qfd;
+        qfd.setFileMode(QFileDialog::FileMode::AnyFile);
+        qfd.setWindowTitle("Save the index file");
+        qfd.setNameFilter("Text file (*.txt)");
+        qfd.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
+        if(qfd.exec()) {
+            auto path = qfd.selectedFiles()[0];
+            
+            // Wait until the process finished
+            if(this->process) {
+                this->process->waitForFinished(-1);
+                this->process = nullptr;
+                delete this->process;
+            }
+            
+            // Spawn a new one
+            QProcess process(this);
+            process.setProgram(this->main_window->executable_path("invader-index").string().c_str());
+            console_box_stderr->attach_to_process(&process, ConsoleBox::OutputChannel::StandardError);
+            QStringList arguments;
+            arguments << this->path.string().c_str() << path;
+            process.setArguments(arguments);
+            process.start();
+            process.waitForFinished(-1);
         }
     }
 }
