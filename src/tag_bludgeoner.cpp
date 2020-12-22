@@ -37,12 +37,12 @@ namespace SixShooter {
             { "-T", "invalid-reference-classes", "-T", "excessive-script-nodes", "-T", "missing-script-source", "-T", "invalid-model-markers", "-T", "nonnormal-vectors", "-T", "invalid-strings", "-T", "invalid-indices", "-T", "invalid-enums", "-T", "out-of-range" }
         },
         {
-            "Sounds (fixes issues with some sounds - SLOW)",
+            "Sounds (fixes issues with some sounds - slower)",
             2,
             { "-T", "incorrect-sound-buffer" }
         },
         {
-            "Exodia (do everything - dangerous)",
+            "Exodia (do everything - slower)",
             1,
             { "--all" }
         }
