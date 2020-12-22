@@ -38,8 +38,8 @@ namespace SixShooter {
         },
         {
             "Exodia (do everything - slow if on a toaster)",
-            1,
-            { "--all" }
+            2,
+            { "-T", "everything" }
         }
     };
     
