@@ -46,7 +46,7 @@ namespace SixShooter {
             auto *options_main_layout_widget = new QWidget(options_widget);
             auto *options_main_layout = new QGridLayout(options_main_layout_widget);
             auto *options_layout = new QVBoxLayout(options_widget);
-            options_main_layout->setMargin(0);
+            options_main_layout->setContentsMargins(0, 0, 0, 0);
             
             // Scenario path
             this->scenario_path = new QLineEdit(options_widget);
@@ -83,7 +83,7 @@ namespace SixShooter {
             // Index
             auto *index_path_finder = new QWidget(options_widget);
             auto *index_path_finder_layout = new QHBoxLayout(index_path_finder);
-            index_path_finder_layout->setMargin(0);
+            index_path_finder_layout->setContentsMargins(0, 0, 0, 0);
             this->index_path = new QLineEdit(index_path_finder);
             this->index_path->setPlaceholderText("None");
             index_path_finder_layout->addWidget(this->index_path);
@@ -121,7 +121,7 @@ namespace SixShooter {
         {
             auto *console_widget = new QWidget();
             auto *console_layout = new QVBoxLayout(console_widget);
-            console_layout->setMargin(0);
+            console_layout->setContentsMargins(0, 0, 0, 0);
             
             auto *stdout_widget = new QGroupBox("Output", this);
             auto *stdout_layout = new QVBoxLayout(stdout_widget);

@@ -26,7 +26,7 @@ namespace SixShooter {
         
         auto *left_widget = new QWidget(this);
         auto *left_layout = new QVBoxLayout(left_widget);
-        left_layout->setMargin(0);
+        left_layout->setContentsMargins(0, 0, 0, 0);
         
         // Add options on the left
         {
@@ -111,7 +111,7 @@ namespace SixShooter {
         {
             auto *console_widget = new QWidget();
             auto *console_layout = new QVBoxLayout(console_widget);
-            console_layout->setMargin(0);
+            console_layout->setContentsMargins(0, 0, 0, 0);
             
             auto *stdout_widget = new QGroupBox("Output", this);
             auto *stdout_layout = new QVBoxLayout(stdout_widget);
