@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QProcess>
+#include <QSettings>
 
 #include "console_box.hpp"
 #include "map_builder.hpp"
@@ -140,6 +141,8 @@ namespace SixShooter {
             console_widget->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Expanding);
             main_layout->addWidget(console_widget);
         }
+        
+        this->restore_settings();
     }
     
     void MapBuilder::compile_map() {
@@ -158,36 +161,56 @@ namespace SixShooter {
             arguments << "--tags" << i.string().c_str();
         }
         
+        QSettings settings;
+        
         arguments << "--maps" << this->main_window->get_maps_directory().string().c_str();
+        
         arguments << "--game-engine" << build_type[this->engine->currentIndex()][1];
+        settings.setValue("last_compiled_scenario_engine", this->engine->currentText());
         
         auto *compressed = compression_type[this->compression->currentIndex()][1];
         if(compressed) {
             arguments << compressed;
         }
+        settings.setValue("last_compiled_scenario_compressed", this->compression->currentText());
         
         auto *raw_data = raw_data_type[this->raw_data->currentIndex()][1];
         if(raw_data) {
             arguments << raw_data;
         }
+        settings.setValue("last_compiled_scenario_raw_data", this->raw_data->currentText());
         
         auto index_path = this->index_path->text();
         if(!index_path.isEmpty()) {
             arguments << "--with-index" << index_path;
         }
+        settings.setValue("last_compiled_scenario_index", index_path);
         
         auto crc32 = this->crc32->text();
         if(!crc32.isEmpty()) {
             arguments << "--forge-crc" << crc32;
         }
+        settings.setValue("last_compiled_scenario_crc32", crc32);
         
+        QString scenario = this->scenario_path->text();
         arguments << this->scenario_path->text();
+        settings.setValue("last_compiled_scenario", scenario);
         
         // Invoke
         this->process->setArguments(arguments);
         this->console_box_stdout->attach_to_process(this->process, ConsoleBox::StandardOutput);
         this->console_box_stderr->attach_to_process(this->process, ConsoleBox::StandardError);
         this->process->start();
+    }
+    
+    void MapBuilder::restore_settings() {
+        QSettings settings;
+        this->engine->setCurrentText(settings.value("last_compiled_scenario_engine", QString("")).toString());
+        this->compression->setCurrentText(settings.value("last_compiled_scenario_compressed", QString("")).toString());
+        this->raw_data->setCurrentText(settings.value("last_compiled_scenario_raw_data", QString("")).toString());
+        this->index_path->setText(settings.value("last_compiled_scenario_index", QString("")).toString());
+        this->crc32->setText(settings.value("last_compiled_scenario_crc32", QString("")).toString());
+        this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());
     }
     
     void MapBuilder::find_index_path() {

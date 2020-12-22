@@ -28,5 +28,8 @@ namespace SixShooter {
         
         void compile_map();
         void find_index_path();
+        
+        void save_settings();
+        void restore_settings();
     };
 }
