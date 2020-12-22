@@ -37,6 +37,7 @@ namespace SixShooter {
         QCheckBox *overwrite;
         QCheckBox *recursive;
         QCheckBox *ignore_resources;
+        QCheckBox *use_maps_preferences;
         
         void extract_full_map();
         void extract_map(const std::vector<std::string> &filter = std::vector<std::string>());

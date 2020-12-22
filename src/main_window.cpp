@@ -17,6 +17,7 @@
 #include "main_window.hpp"
 #include "map_extractor.hpp"
 #include "settings_editor.hpp"
+#include "tag_bludgeoner.hpp"
 
 namespace SixShooter {
     MainWindow::MainWindow() {
@@ -65,6 +66,10 @@ namespace SixShooter {
             auto *tag_extractor = new QPushButton("Extract tags", tag_editing_box);
             connect(tag_extractor, &QPushButton::clicked, this, &MainWindow::start_tag_extractor);
             tag_editing_layout->addWidget(tag_extractor);
+            
+            auto *tag_bludgeoner = new QPushButton("Bludgeon tags", tag_editing_box);
+            connect(tag_bludgeoner, &QPushButton::clicked, this, &MainWindow::start_tag_bludgeoner);
+            tag_editing_layout->addWidget(tag_bludgeoner);
             
             tag_editing_box->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
             tag_editing_box->setLayout(tag_editing_layout);
@@ -179,6 +184,10 @@ namespace SixShooter {
         return this->start_tag_editor(true);
     }
     
+    void MainWindow::start_tag_bludgeoner() {
+        TagBludgeoner(this).exec();
+    }
+    
     void MainWindow::start_tag_extractor() {
         QFileDialog qfd;
         qfd.setOptions(QFileDialog::Option::ReadOnly);
@@ -226,7 +235,8 @@ namespace SixShooter {
         return executable_exists("invader-build") && 
                executable_exists("invader-edit-qt") &&
                executable_exists("invader-extract") &&
-               executable_exists("invader-info");
+               executable_exists("invader-info") &&
+               executable_exists("invader-bludgeon");
     }
     
     std::filesystem::path MainWindow::executable_path(const char *executable) const {

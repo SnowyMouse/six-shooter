@@ -33,6 +33,7 @@ namespace SixShooter {
         void start_map_builder();
         void start_tag_extractor();
         void start_settings_editor();
+        void start_tag_bludgeoner();
         
         std::filesystem::path invader_path;
         std::filesystem::path maps_directory;

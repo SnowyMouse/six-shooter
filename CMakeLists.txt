@@ -25,6 +25,7 @@ add_executable(six-shooter
     src/map_extractor.cpp
     src/settings_editor.cpp
     src/console_box.cpp
+    src/tag_bludgeoner.cpp
 )
 
 target_link_libraries(six-shooter Qt5::Widgets Qt5::Multimedia)

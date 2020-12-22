@@ -59,6 +59,10 @@ namespace SixShooter {
             options_layout->addWidget(new QLabel("Ignore external tags:"), 4, 0);
             options_layout->addWidget(this->ignore_resources, 4, 1);
             
+            this->use_maps_preferences = new QCheckBox(options_widget);
+            options_layout->addWidget(new QLabel("Use maps folder from preferences:"), 5, 0);
+            options_layout->addWidget(this->use_maps_preferences, 5, 1);
+            
             // Set the layout
             options_widget->setLayout(options_layout);
             
@@ -137,13 +141,13 @@ namespace SixShooter {
     
     MapExtractor::~MapExtractor() {
         if(this->process != nullptr) {
-            this->process->waitForFinished(-1);
+            this->process->kill();
         }
     }
     
     void MapExtractor::extract_map(const std::vector<std::string> &filter) {
         if(this->process != nullptr) {
-            this->process->waitForFinished(-1);
+            this->process->kill();
             delete this->process;
             this->process = nullptr;
         }
@@ -155,7 +159,11 @@ namespace SixShooter {
         // Set arguments
         QStringList arguments;
         arguments << "--tags" << this->tags->currentText();
-        arguments << "--maps" << this->main_window->get_maps_directory().string().c_str();
+        
+        if(this->use_maps_preferences->isChecked()) {
+            arguments << "--maps" << this->main_window->get_maps_directory().string().c_str();
+        }
+        
         arguments << this->path.string().c_str();
         
         if(this->non_mp_globals->isChecked()) {
