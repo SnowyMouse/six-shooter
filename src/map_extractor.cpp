@@ -14,6 +14,8 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QFileIconProvider>
+#include <QScreen>
+#include <QGuiApplication>
 
 #include "console_box.hpp"
 #include "main_window.hpp"
@@ -136,6 +138,17 @@ namespace SixShooter {
             console_widget->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Expanding);
             main_layout->addWidget(console_widget);
         }
+        
+        // Set this
+        auto screen_geometry = QGuiApplication::primaryScreen()->geometry();
+        this->setGeometry(
+            QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                QSize(screen_geometry.width() / 5 * 4, screen_geometry.height() / 5 * 4),
+                screen_geometry
+            )
+        );
         
         this->reload_info();
     }
