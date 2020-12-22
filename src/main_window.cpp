@@ -259,6 +259,7 @@ namespace SixShooter {
                executable_exists("invader-edit-qt") &&
                executable_exists("invader-extract") &&
                executable_exists("invader-info") &&
+               executable_exists("invader-refactor") &&
                executable_exists("invader-bludgeon");
     }
     

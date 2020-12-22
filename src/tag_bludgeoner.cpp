@@ -22,24 +22,40 @@ namespace SixShooter {
     struct BludgeonLevel {
         const char *name;
         std::size_t arguments_count = 0;
+        const char *command;
         const char *arguments[32];
     };
     
     static const BludgeonLevel levels[] = {
         {
             "Basic (fixes common issues)",
-            18,
-            { "-T", "invalid-reference-classes", "-T", "excessive-script-nodes", "-T", "missing-script-source", "-T", "invalid-model-markers", "-T", "nonnormal-vectors", "-T", "invalid-strings", "-T", "invalid-indices", "-T", "invalid-enums", "-T", "out-of-range" }
+            19,
+            "invader-bludgeon",
+            { "--type", "invalid-reference-classes", "--type", "excessive-script-nodes", "--type", "missing-script-source", "--type", "invalid-model-markers", "--type", "nonnormal-vectors", "--type", "invalid-strings", "--type", "invalid-indices", "--type", "invalid-enums", "--type", "out-of-range", "--all" }
         },
         {
             "Sounds (fixes issues with some sounds - slow if on a toaster)",
-            2,
-            { "-T", "incorrect-sound-buffer" }
+            3,
+            "invader-bludgeon",
+            { "--type", "incorrect-sound-buffer", "--all" }
         },
         {
-            "Exodia (do everything - slow if on a toaster)",
-            2,
-            { "-T", "everything" }
+            "Change all model references to gbxmodel",
+            5,
+            "invader-refactor",
+            { "--mode", "no-move", "--class", "model", "gbxmodel" }
+        },
+        {
+            "Change all gbxmodel references to model",
+            5,
+            "invader-refactor",
+            { "--mode", "no-move", "--class", "gbxmodel", "model" }
+        },
+        {
+            "Exodia (bludgeon everything - slow if on a toaster)",
+            3,
+            "invader-bludgeon",
+            { "--type", "everything", "--all" }
         }
     };
     
@@ -136,15 +152,14 @@ namespace SixShooter {
         }
         
         // Process
+        auto &more_arguments = levels[this->level->currentIndex()];
         this->process = new QProcess(this);
         connect(this->process, &QProcess::stateChanged, this, &TagBludgeoner::set_ready);
-        this->process->setProgram(this->main_window->executable_path("invader-bludgeon").string().c_str());
+        this->process->setProgram(this->main_window->executable_path(more_arguments.command).string().c_str());
         
         // Set arguments
         QStringList arguments;
         arguments << "--tags" << this->tags->currentText();
-        arguments << "--all";
-        auto &more_arguments = levels[this->level->currentIndex()];
         for(std::size_t i = 0; i < more_arguments.arguments_count; i++) {
             arguments << more_arguments.arguments[i];
         }
