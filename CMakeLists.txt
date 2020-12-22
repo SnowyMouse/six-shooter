@@ -31,5 +31,9 @@ add_executable(six-shooter
     src/tag_tree_dialog.cpp
 )
 
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
+endif()
+
 target_link_libraries(six-shooter Qt5::Widgets)
 target_include_directories(six-shooter PUBLIC ${Qt5Widgets_INCLUDE_DIRS})
