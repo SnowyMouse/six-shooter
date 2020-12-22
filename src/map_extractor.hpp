@@ -36,7 +36,6 @@ namespace SixShooter {
         ConsoleBox *console_box_stderr;
         
         TagTreeWidget *map_tags;
-        QLineEdit *crc32;
         QCheckBox *non_mp_globals;
         QCheckBox *overwrite;
         QCheckBox *ignore_resources;

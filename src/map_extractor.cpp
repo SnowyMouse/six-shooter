@@ -25,7 +25,7 @@
 namespace SixShooter {
     MapExtractor::MapExtractor(const MainWindow *main_window, const std::filesystem::path &path) : main_window(main_window), path(path) {
         auto *main_layout = new QHBoxLayout(this);
-        this->setWindowTitle("Extract a map - Six Shooter");
+        this->setWindowTitle(QString(path.string().c_str()) + " - Extract a tag - Six Shooter");
         
         auto *left_widget = new QWidget(this);
         auto *left_layout = new QVBoxLayout(left_widget);
@@ -76,21 +76,6 @@ namespace SixShooter {
             
             options_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
             left_layout->addWidget(options_widget);
-        }
-        
-        // Some metdata
-        {
-            auto *metadata_widget = new QGroupBox("Metadata", left_widget);
-            auto *metadata_layout = new QGridLayout(metadata_widget);
-            
-            this->crc32 = new QLineEdit(metadata_widget);
-            this->crc32->setReadOnly(true);
-            metadata_layout->addWidget(new QLabel("CRC32:"), 0, 0);
-            metadata_layout->addWidget(this->crc32, 0, 1);
-            
-            metadata_widget->setLayout(metadata_layout);
-            metadata_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
-            left_layout->addWidget(metadata_widget);
         }
         
         // Tags
@@ -228,8 +213,13 @@ namespace SixShooter {
     }
     
     void MapExtractor::reload_info() {
-        this->crc32->setText(get_map_info("crc32"));
-        this->map_tags->clear();
+        QProcess process;
+        process.setProgram(this->main_window->executable_path("invader-info").string().c_str());
+        this->console_box_stdout->attach_to_process(&process, ConsoleBox::OutputChannel::StandardOutput);
+        this->console_box_stderr->attach_to_process(&process, ConsoleBox::OutputChannel::StandardError);
+        process.setArguments(QStringList(this->path.string().c_str()));
+        process.start();
+        process.waitForFinished(-1);
         
         auto tags = get_map_info("tags").split("\n");
         this->map_tags->set_data(tags);
