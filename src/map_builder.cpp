@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QPushButton>
+#include <QFileDialog>
 #include <QProcess>
 
 #include "console_box.hpp"
@@ -47,39 +48,57 @@ namespace SixShooter {
             options_main_layout->setMargin(0);
             
             // Scenario path
-            this->scenario_path = new QLineEdit();
-            options_main_layout->addWidget(new QLabel("Scenario path:"), 0, 0);
+            this->scenario_path = new QLineEdit(options_widget);
+            options_main_layout->addWidget(new QLabel("Scenario tag:"), 0, 0);
             options_main_layout->addWidget(this->scenario_path, 0, 1);
             
             // Map type
-            this->engine = new QComboBox();
+            this->engine = new QComboBox(options_widget);
             for(auto &i : build_type) {
                 this->engine->addItem(i[0]);
             }
-            options_main_layout->addWidget(new QLabel("Engine:"), 1, 0);
+            options_main_layout->addWidget(new QLabel("Engine:", options_widget), 1, 0);
             options_main_layout->addWidget(this->engine, 1, 1);
             
             // Compression type
-            this->compression = new QComboBox();
+            this->compression = new QComboBox(options_widget);
             for(auto &i : compression_type) {
                 this->compression->addItem(i[0]);
             }
-            options_main_layout->addWidget(new QLabel("Compression:"), 2, 0);
+            options_main_layout->addWidget(new QLabel("Compression:", options_widget), 2, 0);
             options_main_layout->addWidget(this->compression, 2, 1);
             
             // Compression type
-            this->raw_data = new QComboBox();
+            this->raw_data = new QComboBox(options_widget);
             for(auto &i : raw_data_type) {
                 this->raw_data->addItem(i[0]);
             }
-            options_main_layout->addWidget(new QLabel("External data:"), 3, 0);
+            options_main_layout->addWidget(new QLabel("External data:", options_widget), 3, 0);
             options_main_layout->addWidget(this->raw_data, 3, 1);
             
             options_main_layout_widget->setLayout(options_main_layout);
             options_layout->addWidget(options_main_layout_widget);
             
+            // Index
+            auto *index_path_finder = new QWidget(options_widget);
+            auto *index_path_finder_layout = new QHBoxLayout(index_path_finder);
+            index_path_finder_layout->setMargin(0);
+            this->index_path = new QLineEdit(index_path_finder);
+            index_path_finder_layout->addWidget(this->index_path);
+            auto *find_index_button = new QPushButton("Find...", index_path_finder);
+            index_path_finder_layout->addWidget(find_index_button);
+            index_path_finder->setLayout(index_path_finder_layout);
+            options_main_layout->addWidget(new QLabel("Index file:", options_widget), 4, 0);
+            options_main_layout->addWidget(index_path_finder, 4, 1);
+            connect(find_index_button, &QPushButton::clicked, this, &MapBuilder::find_index_path);
+            
+            // CRC32
+            this->crc32 = new QLineEdit(options_widget);
+            options_main_layout->addWidget(new QLabel("CRC32:", options_widget), 5, 0);
+            options_main_layout->addWidget(this->crc32, 5, 1);
+            
             // Dummy widget (spacing)
-            auto *dummy_widget = new QWidget();
+            auto *dummy_widget = new QWidget(options_widget);
             dummy_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
             options_layout->addWidget(dummy_widget);
             
@@ -150,6 +169,16 @@ namespace SixShooter {
             arguments << raw_data;
         }
         
+        auto index_path = this->index_path->text();
+        if(!index_path.isEmpty()) {
+            arguments << "--with-index" << index_path;
+        }
+        
+        auto crc32 = this->crc32->text();
+        if(!crc32.isEmpty()) {
+            arguments << "--forge-crc" << crc32;
+        }
+        
         arguments << this->scenario_path->text();
         
         // Invoke
@@ -157,5 +186,14 @@ namespace SixShooter {
         this->console_box_stdout->attach_to_process(this->process, ConsoleBox::StandardOutput);
         this->console_box_stderr->attach_to_process(this->process, ConsoleBox::StandardError);
         this->process->start();
+    }
+    
+    void MapBuilder::find_index_path() {
+        QFileDialog qfd;
+        qfd.setOptions(QFileDialog::Option::ReadOnly);
+        qfd.setWindowTitle("Locate the index file");
+        if(qfd.exec()) {
+            this->index_path->setText(qfd.selectedFiles()[0]);
+        }
     }
 }

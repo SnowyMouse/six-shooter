@@ -25,7 +25,10 @@ namespace SixShooter {
         QComboBox *compression;
         QComboBox *raw_data;
         QProcess *process = nullptr;
+        QLineEdit *index_path;
+        QLineEdit *crc32;
         
         void compile_map();
+        void find_index_path();
     };
 }
