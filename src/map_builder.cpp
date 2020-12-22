@@ -72,6 +72,7 @@ namespace SixShooter {
         {
             auto *console_widget = new QWidget();
             auto *console_layout = new QVBoxLayout(console_widget);
+            console_layout->setMargin(0);
             
             auto *stdout_widget = new QGroupBox("Output", this);
             auto *stdout_layout = new QVBoxLayout(stdout_widget);
