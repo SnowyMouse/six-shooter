@@ -55,6 +55,10 @@ namespace SixShooter {
             options_layout->addWidget(new QLabel("Overwrite:"), 3, 0);
             options_layout->addWidget(this->overwrite, 3, 1);
             
+            this->ignore_resources = new QCheckBox(options_widget);
+            options_layout->addWidget(new QLabel("Ignore external tags:"), 4, 0);
+            options_layout->addWidget(this->ignore_resources, 4, 1);
+            
             // Set the layout
             options_widget->setLayout(options_layout);
             
@@ -164,6 +168,10 @@ namespace SixShooter {
         
         if(this->overwrite->isChecked()) {
             arguments << "--overwrite";
+        }
+        
+        if(this->ignore_resources->isChecked()) {
+            arguments << "--ignore-resources";
         }
         
         for(auto &i : filter) {
