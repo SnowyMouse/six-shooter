@@ -178,7 +178,6 @@ namespace SixShooter {
         
         this->invader_path = settings.value("invader_path").toString().toStdString();
         if(!invader_path_is_valid(this->invader_path)) {
-            // Initial startup? Try the current directory
             #ifdef _WIN32
             if(this->invader_path == "" && invader_path_is_valid(".")) {
                 settings.setValue("invader_path", ".");
@@ -188,17 +187,19 @@ namespace SixShooter {
             #endif
             return false;
         }
-        
-        this->maps_directory = settings.value("maps_path").toString().toStdString();
-        if(!std::filesystem::is_directory(this->maps_directory)) {
-            return false;
-        }
                 
         this->tags_directories.clear();
         auto tags_directories_list = settings.value("tags_directories").toStringList();
         
         // Don't allow empty tags lists
         if(tags_directories_list.size() == 0) {
+            #ifdef _WIN32
+            if(std::filesystem::is_directory("tags")) {
+                tags_directories_list << "tags";
+                settings.setValue("tags_directories", tags_directories_list);
+            }
+            else
+            #endif
             return false;
         }
         
@@ -209,6 +210,18 @@ namespace SixShooter {
                 return false;
             }
             this->tags_directories.emplace_back(path);
+        }
+        
+        this->maps_directory = settings.value("maps_path").toString().toStdString();
+        if(!std::filesystem::is_directory(this->maps_directory)) {
+            #ifdef _WIN32
+            if(this->maps_directory == "" && std::filesystem::is_directory("maps")) {
+                settings.setValue("maps_path", "maps");
+                this->maps_directory = settings.value("maps_path").toString().toStdString();
+            }
+            else
+            #endif
+            return false;
         }
         
         return true;
