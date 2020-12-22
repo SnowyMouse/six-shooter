@@ -9,6 +9,8 @@ class QLineEdit;
 class QComboBox;
 class QCheckBox;
 class QProcess;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 namespace SixShooter {
     class MainWindow;
@@ -29,6 +31,8 @@ namespace SixShooter {
         ConsoleBox *console_box_stdout;
         ConsoleBox *console_box_stderr;
         
+        QTreeWidget *map_tags;
+        QLineEdit *crc32;
         QCheckBox *non_mp_globals;
         QCheckBox *overwrite;
         QCheckBox *recursive;
@@ -36,8 +40,11 @@ namespace SixShooter {
         void extract_full_map();
         void extract_map(const std::vector<std::string> &filter = std::vector<std::string>());
         void find_map_path();
+        void reload_info();
         
         QString get_map_info(const char *what) const;
+        
+        void double_clicked(QTreeWidgetItem *item, int column);
         
         ~MapExtractor();
     };

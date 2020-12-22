@@ -9,7 +9,10 @@
 #include <QCheckBox>
 #include <QProcess>
 #include <QLineEdit>
+#include <QTreeWidget>
 #include <QPushButton>
+#include <QHeaderView>
+#include <QFileIconProvider>
 
 #include "console_box.hpp"
 #include "main_window.hpp"
@@ -19,9 +22,6 @@ namespace SixShooter {
     MapExtractor::MapExtractor(const MainWindow *main_window, const std::filesystem::path &path) : main_window(main_window), path(path) {
         auto *main_layout = new QHBoxLayout(this);
         this->setWindowTitle("Extract a map - Six Shooter");
-        
-        auto tags = get_map_info("tags");
-        std::printf("%s\n", tags.toStdString().c_str());
         
         auto *left_widget = new QWidget(this);
         auto *left_layout = new QVBoxLayout(left_widget);
@@ -78,10 +78,10 @@ namespace SixShooter {
             auto *metadata_widget = new QGroupBox("Metadata", left_widget);
             auto *metadata_layout = new QGridLayout(metadata_widget);
             
-            auto *crc32 = new QLineEdit(get_map_info("crc32"), metadata_widget);
-            crc32->setReadOnly(true);
+            this->crc32 = new QLineEdit(metadata_widget);
+            this->crc32->setReadOnly(true);
             metadata_layout->addWidget(new QLabel("CRC32:"), 0, 0);
-            metadata_layout->addWidget(crc32, 0, 1);
+            metadata_layout->addWidget(this->crc32, 0, 1);
             
             metadata_widget->setLayout(metadata_layout);
             metadata_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
@@ -92,6 +92,15 @@ namespace SixShooter {
         {
             auto *tags_widget = new QGroupBox("Tags", left_widget);
             auto *tags_layout = new QGridLayout(tags_widget);
+            
+            this->map_tags = new QTreeWidget(tags_widget);
+            this->map_tags->header()->setStretchLastSection(true);
+            this->map_tags->setColumnCount(1);
+            this->map_tags->setHeaderHidden(true);
+            this->map_tags->setAlternatingRowColors(true);
+            this->map_tags->setAnimated(false);
+            connect(this->map_tags, &QTreeWidget::itemDoubleClicked, this, &MapExtractor::double_clicked);
+            tags_layout->addWidget(this->map_tags);
             
             tags_widget->setLayout(tags_layout);
             left_layout->addWidget(tags_widget);
@@ -124,6 +133,8 @@ namespace SixShooter {
             console_widget->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Expanding);
             main_layout->addWidget(console_widget);
         }
+        
+        this->reload_info();
     }
     
     MapExtractor::~MapExtractor() {
@@ -161,6 +172,10 @@ namespace SixShooter {
             arguments << "--overwrite";
         }
         
+        for(auto &i : filter) {
+            arguments << "--search" << i.c_str();
+        }
+        
         // Invoke
         this->process->setArguments(arguments);
         this->console_box_stdout->attach_to_process(this->process, ConsoleBox::StandardOutput);
@@ -186,5 +201,148 @@ namespace SixShooter {
         process.waitForFinished(-1);
         
         return QString(process.readAllStandardOutput()).trimmed();
+    }
+    
+    void MapExtractor::reload_info() {
+        this->crc32->setText(get_map_info("crc32"));
+        this->map_tags->clear();
+        
+        auto tags = get_map_info("tags").split("\n");
+        
+        QIcon dir_icon = QFileIconProvider().icon(QFileIconProvider::Folder);
+        QIcon file_icon = QFileIconProvider().icon(QFileIconProvider::File);
+        
+        for(auto &tag : tags) {
+            if(tag.endsWith(".none")) {
+                continue;
+            }
+            
+            QString formatted = tag.replace("/", "\\");
+            auto dir_split = formatted.split("\\");
+            auto dir_split_length = dir_split.size();
+            
+            if(dir_split_length == 0) {
+                continue; // ok weird
+            }
+            
+            QTreeWidgetItem *directory = nullptr;
+            for(std::size_t i = 0; i < dir_split_length; i++) {
+                // Adding it now!
+                if(i + 1 == dir_split_length) {
+                    auto *item = new QTreeWidgetItem(QStringList(dir_split[i]));
+                    item->setData(0, Qt::UserRole, tag);
+                    item->setIcon(0, file_icon);
+                    
+                    if(directory == nullptr) {
+                        int child_count = this->map_tags->topLevelItemCount();
+                        int insertion_point = child_count;
+                        
+                        for(int j = 0; j < child_count; j++) {
+                            auto *item = this->map_tags->topLevelItem(j);
+                            if(item->text(0) > dir_split[i] && item->icon(0).name() != dir_icon.name()) {
+                                insertion_point = j;
+                                break;
+                            }
+                        }
+                        
+                        this->map_tags->insertTopLevelItem(insertion_point, item);
+                    }
+                    else {
+                        int child_count = directory->childCount();
+                        int insertion_point = child_count;
+                        
+                        for(int j = 0; j < child_count; j++) {
+                            auto *item = directory->child(j);
+                            if(item->text(0) > dir_split[i] && item->icon(0).name() != dir_icon.name()) {
+                                insertion_point = j;
+                                break;
+                            }
+                        }
+                        
+                        directory->insertChild(insertion_point, item);
+                    }
+                }
+                
+                // Find the directory with it
+                else {
+                    auto directory_we_are_looking_for = [&directory, &dir_icon, &i, &dir_split](QTreeWidgetItem *item) -> bool {
+                        if(item->text(0) == dir_split[i] && item->icon(0).name() == dir_icon.name()) {
+                            directory = item;
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    };
+                    
+                    // Hold this in case we change it
+                    auto *old_directory = directory;
+                    
+                    if(directory == nullptr) {
+                        int child_count = this->map_tags->topLevelItemCount();
+                        for(int i = 0; i < child_count; i++) {
+                            if(directory_we_are_looking_for(this->map_tags->topLevelItem(i))) {
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        int child_count = directory->childCount();
+                        for(int i = 0; i < child_count; i++) {
+                            if(directory_we_are_looking_for(directory->child(i))) {
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Directory changed. Proceed.
+                    if(old_directory != directory) {
+                        continue;
+                    }
+                    
+                    // Not found? Make the directory then.
+                    auto *new_directory = new QTreeWidgetItem(QStringList(dir_split[i]));
+                    new_directory->setIcon(0, dir_icon);
+                    if(directory == nullptr) {
+                        int child_count = this->map_tags->topLevelItemCount();
+                        int insertion_point = child_count;
+                        
+                        for(int j = 0; j < child_count; j++) {
+                            auto *item = this->map_tags->topLevelItem(j);
+                            if(item->text(0) > dir_split[i] || item->icon(0).name() != dir_icon.name()) {
+                                insertion_point = j;
+                                break;
+                            }
+                        }
+                        
+                        this->map_tags->insertTopLevelItem(insertion_point, new_directory);
+                    }
+                    else {
+                        int child_count = directory->childCount();
+                        int insertion_point = child_count;
+                        
+                        for(int j = 0; j < child_count; j++) {
+                            auto *item = directory->child(j);
+                            if(item->text(0) > dir_split[i] || item->icon(0).name() != dir_icon.name()) {
+                                insertion_point = j;
+                                break;
+                            }
+                        }
+                        
+                        directory->insertChild(insertion_point, new_directory);
+                    }
+                    directory = new_directory;
+                }
+            }
+        }
+    }
+    
+    void MapExtractor::double_clicked(QTreeWidgetItem *item, int column) {
+        auto data = item->data(column, Qt::UserRole);
+        if(!data.isNull()) {
+            std::vector<std::string> filters;
+            filters.emplace_back(data.toString().toStdString());
+            this->extract_map(filters);
+        }
     }
 }
