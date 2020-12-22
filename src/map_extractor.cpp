@@ -92,7 +92,7 @@ namespace SixShooter {
             auto *tags_layout = new QVBoxLayout(tags_widget);
             
             this->map_tags = new TagTreeWidget(tags_widget);
-            connect(this->map_tags, &QTreeWidget::itemDoubleClicked, this, &MapExtractor::double_clicked);
+            connect(this->map_tags, &TagTreeWidget::itemDoubleClicked, this, &MapExtractor::double_clicked);
             tags_layout->addWidget(this->map_tags);
             
             // Extract button

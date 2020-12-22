@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QProcess>
 
+#include "tag_tree_dialog.hpp"
 #include "console_box.hpp"
 #include "map_builder.hpp"
 #include "main_window.hpp"
@@ -49,9 +50,17 @@ namespace SixShooter {
             options_main_layout->setContentsMargins(0, 0, 0, 0);
             
             // Scenario path
-            this->scenario_path = new QLineEdit(options_widget);
+            auto *scenario_path_container = new QWidget(options_widget);
+            auto *scenario_path_container_layout = new QHBoxLayout(scenario_path_container);
+            scenario_path_container_layout->setContentsMargins(0, 0, 0, 0);
+            auto *find_scenario_button = new QPushButton("Find...", scenario_path_container);
+            connect(find_scenario_button, &QPushButton::clicked, this, &MapBuilder::find_scenario_path);
+            this->scenario_path = new QLineEdit(scenario_path_container);
+            scenario_path_container_layout->addWidget(this->scenario_path);
+            scenario_path_container_layout->addWidget(find_scenario_button);
+            scenario_path_container->setLayout(scenario_path_container_layout);
             options_main_layout->addWidget(new QLabel("Scenario tag:"), 0, 0);
-            options_main_layout->addWidget(this->scenario_path, 0, 1);
+            options_main_layout->addWidget(scenario_path_container, 0, 1);
             
             // Map type
             this->engine = new QComboBox(options_widget);
@@ -219,6 +228,45 @@ namespace SixShooter {
         qfd.setWindowTitle("Locate the index file");
         if(qfd.exec()) {
             this->index_path->setText(qfd.selectedFiles()[0]);
+        }
+    }
+    
+    void MapBuilder::find_scenario_path() {
+        // Get all the tags
+        QStringList list;
+        
+        for(auto &i : this->main_window->get_tags_directories()) {
+            auto traverse_directory = [&list, &i](const std::filesystem::path &directory, auto &recursion) -> void {
+                try {
+                    for(auto &f : std::filesystem::directory_iterator(directory)) {
+                        if(std::filesystem::is_directory(f)) {
+                            recursion(f, recursion);
+                        }
+                        else if(std::filesystem::is_regular_file(f)) {
+                            auto relative_path = std::filesystem::relative(f, i);
+                            if(relative_path.extension() != ".scenario") {
+                                continue;
+                            }
+                            
+                            auto relative_path_str = QString(relative_path.string().c_str());
+                            if(!list.contains(relative_path_str)) {
+                                list << relative_path_str;
+                            }
+                        }
+                    }
+                }
+                catch (std::exception &e) {
+                    std::fprintf(stderr, "Failed to query %s: %s\n", directory.string().c_str(), e.what());
+                }
+            };
+            traverse_directory(i, traverse_directory);
+        }
+        
+        TagTreeDialog dialog;
+        dialog.setWindowTitle("Locate the scenario tag - Six Shooter");
+        dialog.set_data(list);
+        if(dialog.exec()) {
+            this->scenario_path->setText(std::filesystem::path(dialog.get_result().toStdString()).stem().string().c_str());
         }
     }
 }

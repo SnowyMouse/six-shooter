@@ -31,6 +31,7 @@ namespace SixShooter {
         
         void compile_map();
         void find_index_path();
+        void find_scenario_path();
         
         void restore_settings();
     };
