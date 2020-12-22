@@ -10,11 +10,11 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QProcess>
-#include <QSettings>
 
 #include "console_box.hpp"
 #include "map_builder.hpp"
 #include "main_window.hpp"
+#include "settings.hpp"
 
 namespace SixShooter {
     static const char *build_type[][2] = {
@@ -161,7 +161,7 @@ namespace SixShooter {
             arguments << "--tags" << i.string().c_str();
         }
         
-        QSettings settings;
+        SixShooterSettings settings;
         
         arguments << "--maps" << this->main_window->get_maps_directory().string().c_str();
         
@@ -204,7 +204,7 @@ namespace SixShooter {
     }
     
     void MapBuilder::restore_settings() {
-        QSettings settings;
+        SixShooterSettings settings;
         this->engine->setCurrentText(settings.value("last_compiled_scenario_engine", QString("")).toString());
         this->compression->setCurrentText(settings.value("last_compiled_scenario_compressed", QString("")).toString());
         this->raw_data->setCurrentText(settings.value("last_compiled_scenario_raw_data", QString("")).toString());

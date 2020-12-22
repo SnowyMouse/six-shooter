@@ -11,12 +11,12 @@
 #include <QFileDialog>
 #include <QDialogButtonBox>
 #include <QMessageBox>
-#include <QSettings>
 #include <QTableWidget>
 #include <QHeaderView>
 
 #include "main_window.hpp"
 #include "settings_editor.hpp"
+#include "settings.hpp"
 
 namespace SixShooter {
     class SettingsEditor::Finder : public QGroupBox {
@@ -207,7 +207,7 @@ namespace SixShooter {
         }
         
         // Update settings
-        QSettings settings;
+        SixShooterSettings settings;
         settings.setValue("invader_path", invader_path);
         settings.setValue("maps_path", map_path);
         settings.setValue("tags_directories", tags_path);

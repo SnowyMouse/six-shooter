@@ -3,7 +3,6 @@
 #include <QStyle>
 #include <QGuiApplication>
 #include <QScreen>
-#include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <filesystem>
@@ -18,6 +17,7 @@
 #include "map_extractor.hpp"
 #include "settings_editor.hpp"
 #include "tag_bludgeoner.hpp"
+#include "settings.hpp"
 
 namespace SixShooter {
     MainWindow::MainWindow() {
@@ -143,7 +143,7 @@ namespace SixShooter {
     }
     
     bool MainWindow::reload_settings() {
-        QSettings settings;
+        SixShooterSettings settings;
         
         this->invader_path = settings.value("invader_path").toString().toStdString();
         if(!invader_path_is_valid(this->invader_path)) {
