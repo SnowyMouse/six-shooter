@@ -12,6 +12,7 @@
 #include <QTreeWidget>
 #include <QPushButton>
 #include <QHeaderView>
+#include <QMessageBox>
 #include <QFileIconProvider>
 
 #include "console_box.hpp"
@@ -48,21 +49,17 @@ namespace SixShooter {
             options_layout->addWidget(new QLabel("Extract non-multiplayer globals:"), 1, 0);
             options_layout->addWidget(this->non_mp_globals, 1, 1);
             
-            this->recursive = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Recursive:"), 2, 0);
-            options_layout->addWidget(this->recursive, 2, 1);
-            
             this->overwrite = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Overwrite:"), 3, 0);
-            options_layout->addWidget(this->overwrite, 3, 1);
+            options_layout->addWidget(new QLabel("Overwrite:"), 2, 0);
+            options_layout->addWidget(this->overwrite, 2, 1);
             
             this->ignore_resources = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Ignore external tags:"), 4, 0);
-            options_layout->addWidget(this->ignore_resources, 4, 1);
+            options_layout->addWidget(new QLabel("Ignore external tags:"), 3, 0);
+            options_layout->addWidget(this->ignore_resources, 3, 1);
             
             this->use_maps_preferences = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Use maps folder from preferences:"), 5, 0);
-            options_layout->addWidget(this->use_maps_preferences, 5, 1);
+            options_layout->addWidget(new QLabel("Use maps folder from preferences:"), 4, 0);
+            options_layout->addWidget(this->use_maps_preferences, 4, 1);
             
             // Set the layout
             options_widget->setLayout(options_layout);
@@ -141,7 +138,7 @@ namespace SixShooter {
         }
     }
     
-    void MapExtractor::extract_map(const std::vector<std::string> &filter) {
+    void MapExtractor::extract_map(const std::vector<std::string> &filter, bool recursive, bool overwrite_anyway) {
         if(this->process != nullptr) {
             this->process->kill();
             delete this->process;
@@ -166,11 +163,11 @@ namespace SixShooter {
             arguments << "--non-mp-globals";
         }
         
-        if(this->recursive->isChecked()) {
+        if(recursive) {
             arguments << "--recursive";
         }
         
-        if(this->overwrite->isChecked()) {
+        if(this->overwrite->isChecked() || overwrite_anyway) {
             arguments << "--overwrite";
         }
         
@@ -220,9 +217,26 @@ namespace SixShooter {
     void MapExtractor::double_clicked(QTreeWidgetItem *item, int column) {
         auto data = item->data(column, Qt::UserRole);
         if(!data.isNull()) {
+            QMessageBox options;
+            options.setWindowTitle("Extraction options");
+            options.setIcon(QMessageBox::Icon::Question);
+            options.setText(QString("You are about to extract ") + data.toString());
+            options.setStandardButtons(QMessageBox::StandardButton::Cancel);
+            options.addButton("Extract (single tag)", QMessageBox::ButtonRole::AcceptRole);
+            options.addButton("Extract (recursive)", QMessageBox::ButtonRole::AcceptRole);
+            
+            auto *overwrite = new QCheckBox("Overwrite tag(s) on disk (if present)", &options);
+            options.setCheckBox(overwrite);
+            
+            int r = options.exec();
+            
+            if(options.result() == QMessageBox::StandardButton::Cancel) {
+                return;
+            }
+            
             std::vector<std::string> filters;
             filters.emplace_back(data.toString().toStdString());
-            this->extract_map(filters);
+            this->extract_map(filters, r == 1, overwrite->isChecked());
         }
     }
 }
