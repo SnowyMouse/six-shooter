@@ -39,26 +39,34 @@ namespace SixShooter {
             for(auto &i : this->main_window->get_tags_directories()) {
                 this->tags->insertItem(0, i.string().c_str());
             }
-            this->tags->setMinimumWidth(400);
-            this->tags->setMaximumWidth(400);
             
-            options_layout->addWidget(new QLabel("Tags directory:"), 0, 0);
+            auto *tags_label = new QLabel("Tags directory:", options_widget);
+            tags_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+            options_layout->addWidget(tags_label, 0, 0);
             options_layout->addWidget(this->tags, 0, 1);
             
             this->non_mp_globals = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Extract non-multiplayer globals:"), 1, 0);
+            auto *non_mp_globals_label = new QLabel("Extract non-multiplayer globals:", options_widget);
+            non_mp_globals_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+            options_layout->addWidget(non_mp_globals_label, 1, 0);
             options_layout->addWidget(this->non_mp_globals, 1, 1);
             
             this->overwrite = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Overwrite:"), 2, 0);
+            auto *overwrite_label = new QLabel("Overwrite:", options_widget);
+            overwrite_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+            options_layout->addWidget(overwrite_label, 2, 0);
             options_layout->addWidget(this->overwrite, 2, 1);
             
             this->ignore_resources = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Ignore external tags:"), 3, 0);
+            auto *ignore_external_label = new QLabel("Ignore external tags:", options_widget);
+            ignore_external_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+            options_layout->addWidget(ignore_external_label, 3, 0);
             options_layout->addWidget(this->ignore_resources, 3, 1);
             
             this->use_maps_preferences = new QCheckBox(options_widget);
-            options_layout->addWidget(new QLabel("Use maps folder from preferences:"), 4, 0);
+            auto *use_maps_preferences_label = new QLabel("Use maps folder from preferences:", options_widget);
+            use_maps_preferences_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+            options_layout->addWidget(use_maps_preferences_label, 4, 0);
             options_layout->addWidget(this->use_maps_preferences, 4, 1);
             
             // Set the layout
