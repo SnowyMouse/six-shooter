@@ -18,7 +18,8 @@ namespace SixShooter {
     private:
         MapBuilder(const MainWindow *main_window);
         const MainWindow *main_window;
-        ConsoleBox *console_box;
+        ConsoleBox *console_box_stdout;
+        ConsoleBox *console_box_stderr;
         QLineEdit *scenario_path;
         QComboBox *engine;
         QProcess *process = nullptr;

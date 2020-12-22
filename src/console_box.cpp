@@ -20,20 +20,35 @@ namespace SixShooter {
         this->setStyleSheet("QTextEdit { background-color: #000; color: #EEE; }");
     }
     
-    void ConsoleBox::attach_to_process(QProcess *process) {
-        connect(process, &QProcess::readyReadStandardError, this, &ConsoleBox::on_output);
-        connect(process, &QProcess::readyReadStandardOutput, this, &ConsoleBox::on_output);
+    void ConsoleBox::attach_to_process(QProcess *process, OutputChannel channel) {
+        if(channel == OutputChannel::StandardError) {
+            connect(process, &QProcess::readyReadStandardError, this, &ConsoleBox::on_standard_error);
+        }
+        else if(channel == OutputChannel::StandardOutput) {
+            connect(process, &QProcess::readyReadStandardOutput, this, &ConsoleBox::on_standard_output);
+        }
+        
         this->process = process;
+        this->html = {};
+        this->clear();
     }
     
-    void ConsoleBox::on_output() {
+    void ConsoleBox::on_standard_output() {
         auto stdout_data = QString(this->process->readAllStandardOutput());
+        
         stdout_data.replace("\n", "<br/>");
         stdout_data.replace("\r", "");
         stdout_data.replace(" ", "&nbsp;");
         this->html += (QString("<span style=\"color: #EEE\">") + stdout_data + "</span>").toStdString();
         
+        this->setHtml(this->html.c_str());
+        
+        this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
+    }
+    
+    void ConsoleBox::on_standard_error() {
         auto stderr_data = QString(this->process->readAllStandardError());
+        
         stderr_data.replace("\n", "<br/>");
         stderr_data.replace("\r", "");
         stderr_data.replace(" ", "&nbsp;");

@@ -70,11 +70,22 @@ namespace SixShooter {
         
         // Add a console on the right
         {
-            auto *console_widget = new QGroupBox("Console", this);
+            auto *console_widget = new QWidget();
             auto *console_layout = new QVBoxLayout(console_widget);
             
-            this->console_box = new ConsoleBox(this);
-            console_layout->addWidget(this->console_box);
+            auto *stdout_widget = new QGroupBox("Output", this);
+            auto *stdout_layout = new QVBoxLayout(stdout_widget);
+            this->console_box_stdout = new ConsoleBox(console_widget);
+            stdout_layout->addWidget(this->console_box_stdout);
+            stdout_widget->setLayout(stdout_layout);
+            console_layout->addWidget(stdout_widget);
+            
+            auto *stderr_widget = new QGroupBox("Errors", this);
+            auto *stderr_layout = new QVBoxLayout(stderr_widget);
+            this->console_box_stderr = new ConsoleBox(console_widget);
+            stderr_layout->addWidget(this->console_box_stderr);
+            stderr_widget->setLayout(stderr_layout);
+            console_layout->addWidget(stderr_widget);
             
             console_widget->setLayout(console_layout);
             console_widget->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Expanding);
@@ -105,8 +116,8 @@ namespace SixShooter {
         
         // Invoke
         this->process->setArguments(arguments);
-        this->console_box->attach_to_process(this->process);
-        this->console_box->clear();
+        this->console_box_stdout->attach_to_process(this->process, ConsoleBox::StandardOutput);
+        this->console_box_stderr->attach_to_process(this->process, ConsoleBox::StandardError);
         this->process->start();
     }
 }
