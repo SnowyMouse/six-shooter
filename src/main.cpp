@@ -3,11 +3,13 @@
 #include <QApplication>
 #include <QStyle>
 #include <QScreen>
+#include <QIcon>
 #include "main_window.hpp"
 
 int main(int argc, char **argv) {
     QApplication a(argc, argv);
     a.setOrganizationName("SnowyMouse");
+    a.setWindowIcon(QIcon(":icon/six-shooter.ico"));
     
     SixShooter::MainWindow w;
     w.show();
