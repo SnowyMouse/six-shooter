@@ -80,10 +80,10 @@ namespace SixShooter {
             dummy_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
             options_layout->addWidget(dummy_widget);
             
-            // Build button
-            auto *compile_button = new QPushButton("Bludgeon", options_widget);
-            connect(compile_button, &QPushButton::clicked, this, &TagBludgeoner::bludgeon_tags);
-            options_layout->addWidget(compile_button);
+            // Bludgeon button
+            this->bludgeon_button = new QPushButton("Bludgeon", options_widget);
+            connect(this->bludgeon_button, &QPushButton::clicked, this, &TagBludgeoner::bludgeon_tags);
+            options_layout->addWidget(this->bludgeon_button);
             
             // Set the layout
             options_widget->setLayout(options_layout);
@@ -120,19 +120,24 @@ namespace SixShooter {
     
     TagBludgeoner::~TagBludgeoner() {
         if(this->process != nullptr) {
-            this->process->kill();
+            this->process->waitForFinished(-1);
         }
+    }
+    
+    void TagBludgeoner::set_ready(QProcess::ProcessState state) {
+        this->bludgeon_button->setEnabled(state == QProcess::ProcessState::NotRunning);
     }
     
     void TagBludgeoner::bludgeon_tags() {
         if(this->process != nullptr) {
-            this->process->kill();
+            this->process->waitForFinished(-1);
             delete this->process;
             this->process = nullptr;
         }
         
         // Process
         this->process = new QProcess(this);
+        connect(this->process, &QProcess::stateChanged, this, &TagBludgeoner::set_ready);
         this->process->setProgram(this->main_window->executable_path("invader-bludgeon").string().c_str());
         
         // Set arguments
