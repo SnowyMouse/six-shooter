@@ -76,9 +76,9 @@ namespace SixShooter {
             for(auto &i : this->main_window->get_tags_directories()) {
                 this->tags->insertItem(0, i.string().c_str());
             }
-            this->tags->setMinimumWidth(400);
-            this->tags->setMaximumWidth(400);
-            options_main_layout->addWidget(new QLabel("Tags directory:"), 0, 0);
+            auto *tags_directory_label = new QLabel("Tags directory:", options_widget);
+            tags_directory_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+            options_main_layout->addWidget(tags_directory_label, 0, 0);
             options_main_layout->addWidget(this->tags, 0, 1);
             
             // Add level
@@ -86,7 +86,9 @@ namespace SixShooter {
             for(auto &i : levels) {
                 this->level->addItem(i.name);
             }
-            options_main_layout->addWidget(new QLabel("Level:"), 1, 0);
+            auto *level_label = new QLabel("Level:", options_widget);
+            level_label->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+            options_main_layout->addWidget(level_label, 1, 0);
             options_main_layout->addWidget(this->level, 1, 1);
             
             options_layout->addWidget(options_main_layout_widget);
