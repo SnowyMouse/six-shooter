@@ -261,6 +261,7 @@ namespace SixShooter {
         qfd.setFileMode(QFileDialog::FileMode::AnyFile);
         qfd.setWindowTitle("Save the index file");
         qfd.setNameFilter("Text file (*.txt)");
+        qfd.selectFile(QString(this->path.stem().string().c_str()) + ".txt");
         qfd.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
         if(qfd.exec()) {
             auto path = qfd.selectedFiles()[0];
