@@ -131,7 +131,7 @@ namespace SixShooter {
         qfd.setFileMode(QFileDialog::FileMode::ExistingFile);
         qfd.setNameFilter("Maps (*.map)");
         qfd.setWindowTitle("Please open the map you want to extract");
-        qfd.setDirectory(this->maps_directory.string().c_str());
+        qfd.setDirectory(std::filesystem::absolute(this->maps_directory).string().c_str());
         
         if(qfd.exec()) {
             // Check if it's protected
