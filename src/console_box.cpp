@@ -8,6 +8,9 @@
 
 #include "console_box.hpp"
 
+#define TEXT_COLOR "#EEE"
+#define ERROR_COLOR "#F77"
+
 namespace SixShooter {
     ConsoleBox::ConsoleBox(QWidget *parent) : QTextEdit(parent) {
         this->setReadOnly(true);
@@ -17,7 +20,7 @@ namespace SixShooter {
         this->setMinimumHeight(QFontMetrics(font).ascent() * 24);
         this->setFont(font);
         
-        this->setStyleSheet("QTextEdit { background-color: #000; color: #EEE; }");
+        this->setStyleSheet("QTextEdit { background-color: #000; }");
     }
     
     void ConsoleBox::attach_to_process(QProcess *process, OutputChannel channel) {
@@ -39,7 +42,7 @@ namespace SixShooter {
         stdout_data.replace("\n", "<br/>");
         stdout_data.replace("\r", "");
         stdout_data.replace(" ", "&nbsp;");
-        this->html += (QString("<span style=\"color: #EEE\">") + stdout_data + "</span>").toStdString();
+        this->html += (QString("<span style=\"color: " TEXT_COLOR "\">") + stdout_data + "</span>").toStdString();
         
         this->setHtml(this->html.c_str());
         
@@ -52,7 +55,7 @@ namespace SixShooter {
         stderr_data.replace("\n", "<br/>");
         stderr_data.replace("\r", "");
         stderr_data.replace(" ", "&nbsp;");
-        this->html += (QString("<span style=\"color: red\">") + stderr_data + "</span>").toStdString();
+        this->html += (QString("<span style=\"color: " ERROR_COLOR "\">") + stderr_data + "</span>").toStdString();
         
         this->setHtml(this->html.c_str());
         
