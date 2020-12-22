@@ -17,7 +17,6 @@ namespace SixShooter {
     private:
         bool find_invader();
         bool find_maps();
-        bool find_tags();
         
         void reload_tags_directories();
         void reload_maps_directory();
