@@ -15,6 +15,7 @@ class QTreeWidgetItem;
 namespace SixShooter {
     class MainWindow;
     class ConsoleBox;
+    class TagTreeWidget;
     
     class MapExtractor : public QDialog {
         Q_OBJECT
@@ -31,7 +32,7 @@ namespace SixShooter {
         ConsoleBox *console_box_stdout;
         ConsoleBox *console_box_stderr;
         
-        QTreeWidget *map_tags;
+        TagTreeWidget *map_tags;
         QLineEdit *crc32;
         QCheckBox *non_mp_globals;
         QCheckBox *overwrite;

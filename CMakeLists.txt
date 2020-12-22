@@ -26,6 +26,7 @@ add_executable(six-shooter
     src/settings_editor.cpp
     src/console_box.cpp
     src/tag_bludgeoner.cpp
+    src/tag_tree_widget.cpp
 )
 
 target_link_libraries(six-shooter Qt5::Widgets)
