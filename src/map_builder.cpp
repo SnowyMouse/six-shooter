@@ -105,16 +105,22 @@ namespace SixShooter {
             options_main_layout->addWidget(index_path_finder, 4, 1);
             connect(find_index_button, &QPushButton::clicked, this, &MapBuilder::find_index_path);
             
+            // Scenario
+            this->rename_scenario = new QLineEdit(options_widget);
+            this->rename_scenario->setPlaceholderText("None");
+            options_main_layout->addWidget(new QLabel("Rename scenario:", options_widget), 5, 0);
+            options_main_layout->addWidget(this->rename_scenario, 5, 1);
+            
             // CRC32
             this->crc32 = new QLineEdit(options_widget);
             this->crc32->setPlaceholderText("None");
-            options_main_layout->addWidget(new QLabel("CRC32:", options_widget), 5, 0);
-            options_main_layout->addWidget(this->crc32, 5, 1);
+            options_main_layout->addWidget(new QLabel("CRC32:", options_widget), 6, 0);
+            options_main_layout->addWidget(this->crc32, 6, 1);
             
             // CRC32
             this->optimize = new QCheckBox(options_widget);
-            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 6, 0);
-            options_main_layout->addWidget(this->optimize, 6, 1);
+            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 7, 0);
+            options_main_layout->addWidget(this->optimize, 7, 1);
             
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
@@ -202,6 +208,12 @@ namespace SixShooter {
         }
         settings.setValue("last_compiled_scenario_index", index_path);
         
+        auto scenario_name = this->rename_scenario->text();
+        if(!scenario_name.isEmpty()) {
+            arguments << "--rename-scenario" << scenario_name;
+        }
+        settings.setValue("last_compiled_scenario_name", scenario_name);
+        
         auto crc32 = this->crc32->text();
         if(!crc32.isEmpty()) {
             arguments << "--forge-crc" << crc32;
@@ -234,6 +246,7 @@ namespace SixShooter {
         this->crc32->setText(settings.value("last_compiled_scenario_crc32", QString("")).toString());
         this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());
         this->optimize->setChecked(settings.value("last_compiled_optimize", false).toBool());
+        this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
     }
     
     void MapBuilder::find_index_path() {

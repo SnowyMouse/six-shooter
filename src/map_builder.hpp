@@ -30,6 +30,7 @@ namespace SixShooter {
         QProcess *process = nullptr;
         QLineEdit *index_path;
         QLineEdit *crc32;
+        QLineEdit *rename_scenario;
         
         void keyPressEvent(QKeyEvent *e) override;
         
