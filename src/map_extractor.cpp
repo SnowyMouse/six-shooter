@@ -30,41 +30,30 @@ namespace SixShooter {
         // Add options on the left
         {
             auto *options_widget = new QGroupBox("Parameters", left_widget);
-            auto *options_main_layout_widget = new QWidget(options_widget);
-            auto *options_main_layout = new QGridLayout(options_main_layout_widget);
-            
-            auto *options_layout = new QVBoxLayout(options_widget);
-            options_main_layout->setMargin(0);
+            auto *options_layout = new QGridLayout(options_widget);
             
             // Add item
-            this->tags = new QComboBox(options_main_layout_widget);
+            this->tags = new QComboBox(options_widget);
             for(auto &i : this->main_window->get_tags_directories()) {
                 this->tags->insertItem(0, i.string().c_str());
             }
             this->tags->setMinimumWidth(400);
             this->tags->setMaximumWidth(400);
             
-            options_main_layout->addWidget(new QLabel("Tags directory:"), 0, 0);
-            options_main_layout->addWidget(this->tags, 0, 1);
-            options_main_layout_widget->setLayout(options_main_layout);
-            options_layout->addWidget(options_main_layout_widget);
+            options_layout->addWidget(new QLabel("Tags directory:"), 0, 0);
+            options_layout->addWidget(this->tags, 0, 1);
             
             this->non_mp_globals = new QCheckBox(options_widget);
-            options_main_layout->addWidget(new QLabel("Extract non-multiplayer globals:"), 1, 0);
-            options_main_layout->addWidget(this->non_mp_globals, 1, 1);
+            options_layout->addWidget(new QLabel("Extract non-multiplayer globals:"), 1, 0);
+            options_layout->addWidget(this->non_mp_globals, 1, 1);
             
             this->recursive = new QCheckBox(options_widget);
-            options_main_layout->addWidget(new QLabel("Recursive:"), 2, 0);
-            options_main_layout->addWidget(this->recursive, 2, 1);
+            options_layout->addWidget(new QLabel("Recursive:"), 2, 0);
+            options_layout->addWidget(this->recursive, 2, 1);
             
             this->overwrite = new QCheckBox(options_widget);
-            options_main_layout->addWidget(new QLabel("Overwrite:"), 3, 0);
-            options_main_layout->addWidget(this->overwrite, 3, 1);
-            
-            // Build button
-            auto *extract_button = new QPushButton("Extract all tags", options_widget);
-            connect(extract_button, &QPushButton::clicked, this, &MapExtractor::extract_full_map);
-            options_layout->addWidget(extract_button);
+            options_layout->addWidget(new QLabel("Overwrite:"), 3, 0);
+            options_layout->addWidget(this->overwrite, 3, 1);
             
             // Set the layout
             options_widget->setLayout(options_layout);
@@ -91,7 +80,7 @@ namespace SixShooter {
         // Tags
         {
             auto *tags_widget = new QGroupBox("Tags", left_widget);
-            auto *tags_layout = new QGridLayout(tags_widget);
+            auto *tags_layout = new QVBoxLayout(tags_widget);
             
             this->map_tags = new QTreeWidget(tags_widget);
             this->map_tags->header()->setStretchLastSection(true);
@@ -101,6 +90,11 @@ namespace SixShooter {
             this->map_tags->setAnimated(false);
             connect(this->map_tags, &QTreeWidget::itemDoubleClicked, this, &MapExtractor::double_clicked);
             tags_layout->addWidget(this->map_tags);
+            
+            // Extract button
+            auto *extract_button = new QPushButton("Extract all tags", tags_widget);
+            connect(extract_button, &QPushButton::clicked, this, &MapExtractor::extract_full_map);
+            tags_layout->addWidget(extract_button);
             
             tags_widget->setLayout(tags_layout);
             left_layout->addWidget(tags_widget);
