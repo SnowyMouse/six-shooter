@@ -15,10 +15,9 @@
 
 #include "map_builder.hpp"
 #include "main_window.hpp"
+#include "settings_editor.hpp"
 
 namespace SixShooter {
-    static bool invader_path_is_valid(const std::filesystem::path &path);
-    
     MainWindow::MainWindow() {
         this->setWindowTitle("Six Shooter");
         
@@ -184,12 +183,15 @@ namespace SixShooter {
     }
     
     void MainWindow::start_map_builder() {
-        MapBuilder builder(this);
-        builder.exec();
+        MapBuilder(this).exec();
     }
     
     void MainWindow::start_settings_editor() {
-        std::printf("stub\n");
+        if(SettingsEditor(this).exec()) {
+            this->reload_tags_directories();
+            this->reload_maps_directory();
+            this->reload_invader_directory();
+        }
     }
     
     std::vector<std::filesystem::path> MainWindow::get_tags_directories() const {
@@ -206,9 +208,9 @@ namespace SixShooter {
         return path / (std::string(executable) + executable_extension);
     }
     
-    static bool invader_path_is_valid(const std::filesystem::path &path) {
+    bool MainWindow::invader_path_is_valid(const std::filesystem::path &path) {
         auto executable_exists = [&path](const char *executable) -> bool {
-            return std::filesystem::exists(executable_path(path, executable));
+            return std::filesystem::exists(::SixShooter::executable_path(path, executable));
         };
         
         // Check if these exist
@@ -279,5 +281,9 @@ namespace SixShooter {
         }
         
         this->invader_path = settings.value("invader_path").toString().toStdString();
+    }
+    
+    std::filesystem::path MainWindow::get_invader_directory() const {
+        return this->invader_path;
     }
 }

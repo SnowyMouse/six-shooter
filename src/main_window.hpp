@@ -7,12 +7,16 @@
 namespace SixShooter {
     class MainWindow : public QMainWindow {
         Q_OBJECT
+        
     public:
         MainWindow();
         
         std::filesystem::path executable_path(const char *executable) const;
         std::vector<std::filesystem::path> get_tags_directories() const;
         std::filesystem::path get_maps_directory() const;
+        std::filesystem::path get_invader_directory() const;
+        
+        static bool invader_path_is_valid(const std::filesystem::path &path);
         
     private:
         bool find_invader();

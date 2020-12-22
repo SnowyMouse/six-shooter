@@ -22,6 +22,7 @@ add_executable(six-shooter
     src/main.cpp
     src/main_window.cpp
     src/map_builder.cpp
+    src/settings_editor.cpp
     src/console_box.cpp
 )
 

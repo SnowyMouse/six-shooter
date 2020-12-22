@@ -3,7 +3,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGroupBox>
-#include <QPlainTextEdit>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -37,7 +36,7 @@ namespace SixShooter {
     
     MapBuilder::MapBuilder(const MainWindow *main_window) : main_window(main_window) {
         auto *main_layout = new QHBoxLayout(this);
-        this->setWindowTitle("Build a map");
+        this->setWindowTitle("Build a map - Six Shooter");
         
         // Add options on the left
         {
