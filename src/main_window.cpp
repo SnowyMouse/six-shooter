@@ -178,6 +178,14 @@ namespace SixShooter {
         
         this->invader_path = settings.value("invader_path").toString().toStdString();
         if(!invader_path_is_valid(this->invader_path)) {
+            // Initial startup? Try the current directory
+            #ifdef _WIN32
+            if(this->invader_path == "" && invader_path_is_valid(".")) {
+                settings.setValue("invader_path", ".");
+                this->invader_path = settings.value("invader_path").toString().toStdString();
+            }
+            else
+            #endif
             return false;
         }
         
@@ -187,7 +195,15 @@ namespace SixShooter {
         }
                 
         this->tags_directories.clear();
-        for(auto &i : settings.value("tags_directories").toStringList()) {
+        auto tags_directories_list = settings.value("tags_directories").toStringList();
+        
+        // Don't allow empty tags lists
+        if(tags_directories_list.size() == 0) {
+            return false;
+        }
+        
+        // Add 'em all
+        for(auto &i : tags_directories_list) {
             std::filesystem::path path = i.toStdString();
             if(!std::filesystem::is_directory(path)) {
                 return false;
@@ -217,6 +233,10 @@ namespace SixShooter {
     }
     
     bool MainWindow::invader_path_is_valid(const std::filesystem::path &path) {
+        if(path == "") {
+            return false;
+        }
+        
         auto executable_exists = [&path](const char *executable) -> bool {
             return std::filesystem::exists(::SixShooter::executable_path(path, executable));
         };
