@@ -280,7 +280,7 @@ namespace SixShooter {
         dialog.setWindowTitle("Locate the scenario tag - Six Shooter");
         dialog.set_data(list);
         if(dialog.exec()) {
-            this->scenario_path->setText(std::filesystem::path(dialog.get_result().toStdString()).stem().string().c_str());
+            this->scenario_path->setText(std::filesystem::path(dialog.get_result().toStdString()).replace_extension("").string().c_str());
         }
     }
     
