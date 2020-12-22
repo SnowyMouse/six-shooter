@@ -11,6 +11,8 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #include <QProcess>
+#include <QDialogButtonBox>
+#include <QLabel>
 #include <QKeyEvent>
 
 #include "map_builder.hpp"
@@ -75,12 +77,16 @@ namespace SixShooter {
         
         // Map building
         {
-            auto *settings_box = new QGroupBox("Settings", window_widget);
+            auto *settings_box = new QGroupBox("Other", window_widget);
             auto *settings_layout = new QVBoxLayout(settings_box);
             
             auto *settings_editor = new QPushButton("Edit settings", settings_box);
             connect(settings_editor, &QPushButton::clicked, this, &MainWindow::start_settings_editor);
             settings_layout->addWidget(settings_editor);
+            
+            auto *about_button = new QPushButton("About", settings_box);
+            connect(about_button, &QPushButton::clicked, this, &MainWindow::start_about);
+            settings_layout->addWidget(about_button);
             
             settings_box->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
             settings_box->setLayout(settings_layout);
@@ -299,5 +305,53 @@ namespace SixShooter {
         this->setMaximumHeight(this->height());
         this->setMaximumWidth(this->width());
         this->invader_edit_qt_unsafe_button->setVisible(false);
+    }
+    
+    void MainWindow::start_about() {
+        QDialog qd;
+        auto *layout = new QVBoxLayout(&qd);
+        qd.setWindowTitle("About - Six Shooter");
+        
+        auto *metadata_widget = new QWidget(&qd);
+        auto *metadata_layout = new QGridLayout(metadata_widget);
+        
+        // Show six shooter version
+        auto *six_shooter_vlabel = new QLabel("Six Shooter version:", metadata_widget);
+        six_shooter_vlabel->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+        metadata_layout->addWidget(six_shooter_vlabel, 0, 0);
+        auto *six_shooter_version = new QLabel("<b>0.1.1.0</b>", metadata_widget);
+        metadata_layout->addWidget(six_shooter_version, 0, 1);
+        
+        // Show invader version
+        auto *invader_vlabel = new QLabel("Invader version:", metadata_widget);
+        invader_vlabel->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+        metadata_layout->addWidget(invader_vlabel, 1, 0);
+        QProcess process;
+        process.setProgram(this->executable_path("invader-build").string().c_str());
+        QStringList arguments;
+        arguments << "--info";
+        process.setArguments(arguments);
+        process.start();
+        process.waitForFinished(-1);
+        auto *invader_version = new QLabel(QString("<b>") + QString(process.readAllStandardOutput()).split("\n")[0] + "</b>", metadata_widget);
+        metadata_layout->addWidget(invader_version, 1, 1);
+        metadata_layout->setContentsMargins(0,0,0,20);
+        
+        layout->addWidget(metadata_widget);
+        
+        // Lastly, show this blurb
+        auto *blurb = new QLabel("Copyright &copy; Snowy Mouse 2020\n\nThis program is licensed under version 3 of the GNU General Public License.\n\nThe original project's source code can be found at: https://github.com/SnowyMouse/six-shooter\n\n\nAdditional permissions as per section 7 of the GPL:\n\nIf you received this software without the source code and you cannot obtain it, you are hereby authorized\nto inform the person who gave you this software that they are a huge douche (and they broke the GPL).", this);
+        blurb->setText(blurb->text().replace("  ", "&nbsp;&nbsp;"));
+        blurb->setText(blurb->text().replace("\n", "<br />"));
+        layout->addWidget(blurb);
+        
+        auto *dialog_box = new QDialogButtonBox(&qd);
+        dialog_box->addButton(QDialogButtonBox::StandardButton::Close);
+        layout->addWidget(dialog_box);
+        connect(dialog_box, &QDialogButtonBox::rejected, &qd, &QDialog::reject);
+        
+        qd.setLayout(layout);
+        qd.setFixedSize(0,0);
+        qd.exec();
     }
 }

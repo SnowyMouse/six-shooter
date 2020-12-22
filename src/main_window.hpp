@@ -31,6 +31,7 @@ namespace SixShooter {
         void start_tag_editor(bool disable_safeguards);
         void start_tag_editor_safe();
         void start_tag_editor_unsafe();
+        void start_about();
         
         void start_map_builder();
         void start_tag_extractor();
