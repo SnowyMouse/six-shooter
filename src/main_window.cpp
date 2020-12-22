@@ -23,14 +23,10 @@ namespace SixShooter {
     MainWindow::MainWindow() {
         this->setWindowTitle("Six Shooter");
         
-        // Invader?
-        this->reload_invader_directory();
-        
-        // Do we have tag directories?
-        this->reload_tags_directories();
-        
-        // Do we have a map directory?
-        this->reload_maps_directory();
+        // Reload these
+        if(!this->reload_settings()) {
+            this->start_settings_editor();
+        }
         
         // Set up the GUI
         auto *window_widget = new QWidget(this);
@@ -96,64 +92,6 @@ namespace SixShooter {
         this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
     }
     
-    bool MainWindow::find_invader() {
-        while(true) {
-            // Initialize the file dialog
-            QFileDialog qfd;
-            qfd.setOptions(QFileDialog::Option::ReadOnly | QFileDialog::Option::ShowDirsOnly);
-            qfd.setWindowTitle("Please find the folder where Invader is located");
-            if(qfd.exec()) {
-                // Look for it!
-                auto path = qfd.selectedFiles()[0];
-                if(invader_path_is_valid(path.toStdString())) {
-                    QSettings().setValue("invader_path", path);
-                    return true;
-                }
-                else {
-                    QMessageBox qmd;
-                    qmd.setWindowTitle("Path error");
-                    qmd.setText("The path (" + path + ") is not valid.");
-                    qmd.setIcon(QMessageBox::Icon::Critical);
-                    qmd.exec();
-                    continue;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-    }
-    
-    void MainWindow::reload_tags_directories() {
-        this->tags_directories.clear();
-        
-        QSettings settings;
-        auto setting = settings.value("tags_directories");
-        QStringList directory_list;
-        
-        // Load it!
-        if(setting.isNull() || setting.toStringList().size() == 0) {
-            QFileDialog qfd;
-            qfd.setOptions(QFileDialog::Option::ReadOnly | QFileDialog::Option::ShowDirsOnly);
-            qfd.setWindowTitle("Please locate your tags directory");
-            if(qfd.exec()) {
-                directory_list = qfd.selectedFiles();
-                settings.setValue("tags_directories", directory_list);
-            }
-            else {
-                std::exit(EXIT_FAILURE);
-            }
-        }
-        else {
-            directory_list = setting.toStringList();
-        }
-        
-        // Add it!
-        for(auto &i : directory_list) {
-            this->tags_directories.emplace_back(i.toStdString());
-        }
-    }
-    
     void MainWindow::start_tag_editor(bool disable_safeguards) {
         // Process
         QProcess process;
@@ -190,7 +128,7 @@ namespace SixShooter {
     
     void MainWindow::start_tag_extractor() {
         QFileDialog qfd;
-        qfd.setOptions(QFileDialog::Option::ReadOnly);
+        qfd.setFileMode(QFileDialog::FileMode::ExistingFile);
         qfd.setNameFilter("Maps (*.map)");
         qfd.setWindowTitle("Please open the map you want to extract");
         qfd.setDirectory(this->maps_directory.string().c_str());
@@ -204,12 +142,33 @@ namespace SixShooter {
         MapBuilder(this).exec();
     }
     
-    void MainWindow::start_settings_editor() {
-        if(SettingsEditor(this).exec()) {
-            this->reload_tags_directories();
-            this->reload_maps_directory();
-            this->reload_invader_directory();
+    bool MainWindow::reload_settings() {
+        QSettings settings;
+        
+        this->invader_path = settings.value("invader_path").toString().toStdString();
+        if(!invader_path_is_valid(this->invader_path)) {
+            return false;
         }
+        
+        this->maps_directory = settings.value("maps_path").toString().toStdString();
+        if(!std::filesystem::is_directory(this->maps_directory)) {
+            return false;
+        }
+                
+        this->tags_directories.clear();
+        for(auto &i : settings.value("tags_directories").toStringList()) {
+            std::filesystem::path path = i.toStdString();
+            if(!std::filesystem::is_directory(path)) {
+                return false;
+            }
+            this->tags_directories.emplace_back(path);
+        }
+        
+        return true;
+    }
+    
+    void MainWindow::start_settings_editor() {
+        do { SettingsEditor(this, !this->isVisible()).exec(); } while (!this->reload_settings());
     }
     
     std::vector<std::filesystem::path> MainWindow::get_tags_directories() const {
@@ -245,61 +204,6 @@ namespace SixShooter {
     
     std::filesystem::path MainWindow::get_maps_directory() const {
         return this->maps_directory;
-    }
-    
-    bool MainWindow::find_maps() {
-        while(true) {
-            QFileDialog qfd;
-            qfd.setOptions(QFileDialog::Option::ReadOnly | QFileDialog::Option::ShowDirsOnly);
-            qfd.setWindowTitle("Please find your maps folder");
-            if(qfd.exec()) {
-                QSettings().setValue("maps_path", qfd.selectedFiles()[0]);
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    }
-    
-    void MainWindow::reload_maps_directory() {
-        // Get settings
-        QSettings settings;
-        
-        // Is it set?
-        if(settings.value("maps_path").isNull()) {
-            if(!find_maps()) {
-                std::exit(EXIT_FAILURE);
-            }
-        }
-        
-        this->maps_directory = settings.value("maps_path").toString().toStdString();
-    }
-    
-    void MainWindow::reload_invader_directory() {
-        // Get settings
-        QSettings settings;
-        
-        // Do we have Invader present?
-        if(settings.value("invader_path").isNull()) {
-            if(!find_invader()) {
-                std::exit(EXIT_FAILURE);
-            }
-        }
-        else {
-            if(!invader_path_is_valid(settings.value("invader_path").toString().toStdString())) {
-                QMessageBox qmd;
-                qmd.setWindowTitle("Path error");
-                qmd.setText("The Invader path stored in the application config is no longer valid. You will have to re-find it.");
-                qmd.setIcon(QMessageBox::Icon::Warning);
-                qmd.exec();
-                if(!find_invader()) {
-                    std::exit(EXIT_FAILURE);
-                }
-            }
-        }
-        
-        this->invader_path = settings.value("invader_path").toString().toStdString();
     }
     
     std::filesystem::path MainWindow::get_invader_directory() const {

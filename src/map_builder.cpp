@@ -215,7 +215,7 @@ namespace SixShooter {
     
     void MapBuilder::find_index_path() {
         QFileDialog qfd;
-        qfd.setOptions(QFileDialog::Option::ReadOnly);
+        qfd.setFileMode(QFileDialog::FileMode::ExistingFile);
         qfd.setWindowTitle("Locate the index file");
         if(qfd.exec()) {
             this->index_path->setText(qfd.selectedFiles()[0]);

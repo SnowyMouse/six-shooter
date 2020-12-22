@@ -25,7 +25,8 @@ namespace SixShooter {
         
         void find_directory() {
             QFileDialog qfd;
-            qfd.setOptions(QFileDialog::Option::ReadOnly | QFileDialog::Option::ShowDirsOnly);
+            qfd.setOption(QFileDialog::Option::ShowDirsOnly, true);
+            qfd.setFileMode(QFileDialog::FileMode::Directory);
             qfd.setWindowTitle(prompt);
             if(qfd.exec()) {
                 this->path->setText(qfd.selectedFiles()[0]);
@@ -52,7 +53,7 @@ namespace SixShooter {
         QLineEdit *path;
     };
     
-    SettingsEditor::SettingsEditor(MainWindow *main_window) : main_window(main_window) {
+    SettingsEditor::SettingsEditor(MainWindow *main_window, bool exit_on_failure) : main_window(main_window), exit_on_failure(exit_on_failure) {
         auto *main_layout = new QVBoxLayout(this);
         this->setWindowTitle("Edit settings - Six Shooter");
         
@@ -145,12 +146,19 @@ namespace SixShooter {
     
     void SettingsEditor::add_path() {
         QFileDialog qfd;
-        qfd.setOptions(QFileDialog::Option::ReadOnly | QFileDialog::Option::ShowDirsOnly);
         qfd.setWindowTitle("Find a tags directory");
+        qfd.setFileMode(QFileDialog::FileMode::Directory);
         if(qfd.exec()) {
             this->tags_paths.emplace_back(qfd.selectedFiles()[0].toStdString());
             this->refresh_tags_table();
         }
+    }
+    
+    void SettingsEditor::reject() {
+        if(this->exit_on_failure) {
+            std::exit(EXIT_FAILURE);
+        }
+        QDialog::reject();
     }
     
     void SettingsEditor::accept() {

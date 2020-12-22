@@ -19,12 +19,7 @@ namespace SixShooter {
         static bool invader_path_is_valid(const std::filesystem::path &path);
         
     private:
-        bool find_invader();
-        bool find_maps();
-        
-        void reload_tags_directories();
-        void reload_maps_directory();
-        void reload_invader_directory();
+        bool reload_settings();
         
         void start_tag_editor(bool disable_safeguards);
         void start_tag_editor_safe();

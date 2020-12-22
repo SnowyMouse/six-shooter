@@ -14,7 +14,7 @@ namespace SixShooter {
         Q_OBJECT
         friend class MainWindow;
     private:
-        SettingsEditor(MainWindow *main_window);
+        SettingsEditor(MainWindow *main_window, bool exit_on_failure);
         
         MainWindow *main_window;
         
@@ -26,7 +26,9 @@ namespace SixShooter {
         std::vector<std::filesystem::path> tags_paths;
         
         void save_settings();
+        void reject() override;
         void accept() override;
+        bool exit_on_failure;
         
         void refresh_tags_table();
         
