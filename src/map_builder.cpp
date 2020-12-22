@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QProcess>
+#include <QCheckBox>
 
 #include "tag_tree_dialog.hpp"
 #include "console_box.hpp"
@@ -109,6 +110,11 @@ namespace SixShooter {
             options_main_layout->addWidget(new QLabel("CRC32:", options_widget), 5, 0);
             options_main_layout->addWidget(this->crc32, 5, 1);
             
+            // CRC32
+            this->optimize = new QCheckBox(options_widget);
+            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 6, 0);
+            options_main_layout->addWidget(this->optimize, 6, 1);
+            
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
             dummy_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
@@ -205,6 +211,12 @@ namespace SixShooter {
         arguments << this->scenario_path->text();
         settings.setValue("last_compiled_scenario", scenario);
         
+        bool optimize = this->optimize->isChecked();
+        if(optimize) {
+            arguments << "--optimize";
+        }
+        settings.setValue("last_compiled_optimize", optimize);
+        
         // Invoke
         this->process->setArguments(arguments);
         this->console_box_stdout->attach_to_process(this->process, ConsoleBox::StandardOutput);
@@ -220,6 +232,7 @@ namespace SixShooter {
         this->index_path->setText(settings.value("last_compiled_scenario_index", QString("")).toString());
         this->crc32->setText(settings.value("last_compiled_scenario_crc32", QString("")).toString());
         this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());
+        this->optimize->setChecked(settings.value("last_compiled_optimize", false).toBool());
     }
     
     void MapBuilder::find_index_path() {

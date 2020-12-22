@@ -8,6 +8,7 @@
 class QLineEdit;
 class QComboBox;
 class QProcess;
+class QCheckBox;
 
 namespace SixShooter {
     class MainWindow;
@@ -24,6 +25,7 @@ namespace SixShooter {
         QLineEdit *scenario_path;
         QComboBox *engine;
         QComboBox *compression;
+        QCheckBox *optimize;
         QComboBox *raw_data;
         QProcess *process = nullptr;
         QLineEdit *index_path;
