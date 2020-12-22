@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#ifndef SIX_SHOOTER_SETTINGS_EDITOR_HPP
+#define SIX_SHOOTER_SETTINGS_EDITOR_HPP
+
 #include <QDialog>
 #include <filesystem>
 #include <vector>
@@ -39,3 +42,5 @@ namespace SixShooter {
         void modified_path(int row, int column);
     };
 }
+
+#endif

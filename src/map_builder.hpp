@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#ifndef SIX_SHOOTER_MAP_BUILDER_HPP
+#define SIX_SHOOTER_MAP_BUILDER_HPP
+
 #include <QDialog>
 
 class QLineEdit;
@@ -32,3 +35,5 @@ namespace SixShooter {
         void restore_settings();
     };
 }
+
+#endif

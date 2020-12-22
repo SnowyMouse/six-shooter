@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#ifndef SIX_SHOOTER_CONSOLE_BOX_HPP
+#define SIX_SHOOTER_CONSOLE_BOX_HPP
+
 #include <QTextEdit>
 
 class QProcess;
@@ -25,3 +28,5 @@ namespace SixShooter {
         std::string html;
     };
 }
+
+#endif

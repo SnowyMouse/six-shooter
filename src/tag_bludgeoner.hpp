@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#ifndef SIX_SHOOTER_TAG_BLUDGEONER_HPP
+#define SIX_SHOOTER_TAG_BLUDGEONER_HPP
+
 #include <QDialog>
 #include <string>
 #include <vector>
@@ -30,3 +33,5 @@ namespace SixShooter {
         ~TagBludgeoner();
     };
 }
+
+#endif

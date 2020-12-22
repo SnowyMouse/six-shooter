@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+#ifndef SIX_SHOOTER_MAIN_WINDOW_HPP
+#define SIX_SHOOTER_MAIN_WINDOW_HPP
+
 #include <QMainWindow>
 #include <filesystem>
 #include <vector>
@@ -35,3 +38,5 @@ namespace SixShooter {
         std::vector<std::filesystem::path> tags_directories;
     };
 }
+
+#endif
