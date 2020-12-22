@@ -28,5 +28,5 @@ add_executable(six-shooter
     src/tag_bludgeoner.cpp
 )
 
-target_link_libraries(six-shooter Qt5::Widgets Qt5::Multimedia)
+target_link_libraries(six-shooter Qt5::Widgets)
 target_include_directories(six-shooter PUBLIC ${Qt5Widgets_INCLUDE_DIRS})
