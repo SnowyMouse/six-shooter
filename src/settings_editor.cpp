@@ -99,6 +99,7 @@ namespace SixShooter {
         
         connect(qdbb, &QDialogButtonBox::accepted, this, &SettingsEditor::accept);
         connect(qdbb, &QDialogButtonBox::rejected, this, &QDialog::reject);
+        connect(this->tags, &QTableWidget::cellChanged, this, &SettingsEditor::modified_path);
         
         this->setLayout(main_layout);
     }
@@ -121,8 +122,6 @@ namespace SixShooter {
         auto path_count = this->tags_paths.size();
         int delete_this = this->tags->currentRow();
         
-        std::printf("%i >= 0 && %i < %i\n", delete_this, delete_this, path_count);
-        
         if(delete_this >= 0 && delete_this + 1 < path_count) {
             auto path = this->tags_paths[delete_this];
             
@@ -137,8 +136,6 @@ namespace SixShooter {
     void SettingsEditor::remove_path() {
         auto path_count = this->tags_paths.size();
         int delete_this = this->tags->currentRow();
-        
-        std::printf("%i\n", delete_this);
         
         if(delete_this >= 0 && delete_this < path_count) {
             this->tags_paths.erase(this->tags_paths.begin() + delete_this);
@@ -190,6 +187,14 @@ namespace SixShooter {
         
         QStringList tags_path;
         for(auto &i : this->tags_paths) {
+            if(!std::filesystem::is_directory(i)) {
+                QMessageBox qmd;
+                qmd.setWindowTitle("Path error");
+                qmd.setText(QString("Tags directory \"") + (i.string().c_str()) + "\" does not point to a valid directory");
+                qmd.setIcon(QMessageBox::Icon::Critical);
+                qmd.exec();
+                return;
+            }
             tags_path << i.string().c_str();
         }
         
@@ -213,5 +218,9 @@ namespace SixShooter {
             auto *item = new QTableWidgetItem(i.string().c_str());
             this->tags->setItem(0, index++, item);
         }
+    }
+    
+    void SettingsEditor::modified_path(int row, int) {
+        this->tags_paths[row] = this->tags->itemAt(row, 0)->text().toStdString();
     }
 }

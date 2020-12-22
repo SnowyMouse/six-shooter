@@ -34,5 +34,6 @@ namespace SixShooter {
         void move_down();
         void remove_path();
         void add_path();
+        void modified_path(int row, int column);
     };
 }
