@@ -134,6 +134,37 @@ namespace SixShooter {
         qfd.setDirectory(this->maps_directory.string().c_str());
         
         if(qfd.exec()) {
+            // Check if it's protected
+            QProcess process;
+            process.setProgram(this->executable_path("invader-info").string().c_str());
+            QStringList arguments;
+            arguments << "--type" << "protection";
+            arguments << qfd.selectedFiles()[0];
+            process.setArguments(arguments);
+            process.start();
+            process.waitForFinished(-1);
+            
+            if(process.exitCode() == 1) {
+                QMessageBox warning;
+                warning.setWindowTitle("Unable to open the map");
+                warning.setText("This map appears to be invalid and cannot be opened.");
+                warning.setIcon(QMessageBox::Icon::Critical);
+                warning.exec();
+                return;
+            }
+            
+            auto result = QString(process.readAllStandardOutput()).trimmed().toInt();
+            if(result == 1) {
+                QMessageBox warning;
+                warning.setWindowTitle("Map appears protected");
+                warning.setText("This map appears to be protected/corrupted. Extracting it in this state is not advised.\n\nAre you sure you want to open it?");
+                warning.setIcon(QMessageBox::Icon::Warning);
+                warning.setStandardButtons(QMessageBox::StandardButton::Ok | QMessageBox::StandardButton::Cancel);
+                if(!warning.exec() || warning.result() == QMessageBox::StandardButton::Cancel) {
+                    return;
+                }
+            }
+            
             MapExtractor(this, qfd.selectedFiles()[0].toStdString()).exec();
         }
     }
