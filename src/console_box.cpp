@@ -36,29 +36,29 @@ namespace SixShooter {
         this->clear();
     }
     
+    static void clean_string(QString &string) {
+        string.replace("\n", "<br/>");
+        string.replace("\r", "");
+        string.replace(" ", "&nbsp;");
+    }
+    
     void ConsoleBox::on_standard_output() {
         auto stdout_data = QString(this->process->readAllStandardOutput());
+        clean_string(stdout_data);
         
-        stdout_data.replace("\n", "<br/>");
-        stdout_data.replace("\r", "");
-        stdout_data.replace(" ", "&nbsp;");
         this->html += (QString("<span style=\"color: " TEXT_COLOR "\">") + stdout_data + "</span>").toStdString();
         
         this->setHtml(this->html.c_str());
-        
         this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
     }
     
     void ConsoleBox::on_standard_error() {
         auto stderr_data = QString(this->process->readAllStandardError());
+        clean_string(stderr_data);
         
-        stderr_data.replace("\n", "<br/>");
-        stderr_data.replace("\r", "");
-        stderr_data.replace(" ", "&nbsp;");
         this->html += (QString("<span style=\"color: " ERROR_COLOR "\">") + stderr_data + "</span>").toStdString();
         
         this->setHtml(this->html.c_str());
-        
         this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
     }
 }
