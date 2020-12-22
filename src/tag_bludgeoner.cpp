@@ -27,22 +27,17 @@ namespace SixShooter {
     
     static const BludgeonLevel levels[] = {
         {
-            "Basic (fixes common issues with stock maps)",
-            6,
-            { "-T", "invalid-indices", "-T", "invalid-enums", "-T", "out-of-range" }
-        },
-        {
-            "Extra (fixes common issues with tags made with other tools)",
+            "Basic (fixes common issues with stock maps and tags made with other tools)",
             18,
             { "-T", "invalid-reference-classes", "-T", "excessive-script-nodes", "-T", "missing-script-source", "-T", "invalid-model-markers", "-T", "nonnormal-vectors", "-T", "invalid-strings", "-T", "invalid-indices", "-T", "invalid-enums", "-T", "out-of-range" }
         },
         {
-            "Sounds (fixes issues with some sounds - slower)",
+            "Sounds (fixes issues with some sounds - slow if you're on a toaster)",
             2,
             { "-T", "incorrect-sound-buffer" }
         },
         {
-            "Exodia (do everything - slower)",
+            "Exodia (do everything - slow if you're on a toaster)",
             1,
             { "--all" }
         }
