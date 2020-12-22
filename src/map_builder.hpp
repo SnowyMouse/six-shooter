@@ -22,6 +22,8 @@ namespace SixShooter {
         ConsoleBox *console_box_stderr;
         QLineEdit *scenario_path;
         QComboBox *engine;
+        QComboBox *compression;
+        QComboBox *raw_data;
         QProcess *process = nullptr;
         
         void compile_map();

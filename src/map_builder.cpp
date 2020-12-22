@@ -17,10 +17,22 @@
 
 namespace SixShooter {
     static const char *build_type[][2] = {
-        {"Halo: Custom Edition", "custom"},
-        {"Halo (Retail Version)", "retail"},
-        {"Halo (Demo Version)", "demo"},
-        {"Halo: Custom Edition (MCC: CEA compression)", "mcc-custom"},
+        {"Halo PC (Custom Edition)", "custom"},
+        {"Halo PC (Retail)", "retail"},
+        {"Halo PC (Demo)", "demo"},
+        {"Halo PC (Custom Edition with CEA compression)", "mcc-custom"},
+    };
+    
+    static const char *compression_type[][2] = {
+        {"Automatic", nullptr},
+        {"Compressed", "--compress"},
+        {"Uncompressed", "--uncompressed"}
+    };
+    
+    static const char *raw_data_type[][2] = {
+        {"Automatic", nullptr},
+        {"Self-contained", "--no-external-tags"},
+        {"Always index (Custom Edition only)", "--always-index-tags"}
     };
     
     MapBuilder::MapBuilder(const MainWindow *main_window) : main_window(main_window) {
@@ -47,6 +59,22 @@ namespace SixShooter {
             }
             options_main_layout->addWidget(new QLabel("Engine:"), 1, 0);
             options_main_layout->addWidget(this->engine, 1, 1);
+            
+            // Compression type
+            this->compression = new QComboBox();
+            for(auto &i : compression_type) {
+                this->compression->addItem(i[0]);
+            }
+            options_main_layout->addWidget(new QLabel("Compression:"), 2, 0);
+            options_main_layout->addWidget(this->compression, 2, 1);
+            
+            // Compression type
+            this->raw_data = new QComboBox();
+            for(auto &i : raw_data_type) {
+                this->raw_data->addItem(i[0]);
+            }
+            options_main_layout->addWidget(new QLabel("External data:"), 3, 0);
+            options_main_layout->addWidget(this->raw_data, 3, 1);
             
             options_main_layout_widget->setLayout(options_main_layout);
             options_layout->addWidget(options_main_layout_widget);
@@ -112,6 +140,16 @@ namespace SixShooter {
         
         arguments << "--maps" << this->main_window->get_maps_directory().string().c_str();
         arguments << "--game-engine" << build_type[this->engine->currentIndex()][1];
+        
+        auto *compressed = compression_type[this->compression->currentIndex()][1];
+        if(compressed) {
+            arguments << compressed;
+        }
+        
+        auto *raw_data = raw_data_type[this->raw_data->currentIndex()][1];
+        if(raw_data) {
+            arguments << raw_data;
+        }
         
         arguments << this->scenario_path->text();
         
