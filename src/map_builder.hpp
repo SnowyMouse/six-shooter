@@ -6,6 +6,7 @@
 
 class QLineEdit;
 class QComboBox;
+class QProcess;
 
 namespace SixShooter {
     class MainWindow;
@@ -20,6 +21,7 @@ namespace SixShooter {
         ConsoleBox *console_box;
         QLineEdit *scenario_path;
         QComboBox *engine;
+        QProcess *process = nullptr;
         
         void compile_map();
     };

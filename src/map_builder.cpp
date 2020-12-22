@@ -83,9 +83,14 @@ namespace SixShooter {
     }
     
     void MapBuilder::compile_map() {
+        if(this->process != nullptr) {
+            delete this->process;
+            this->process = nullptr;
+        }
+        
         // Process
-        QProcess process;
-        process.setProgram(this->main_window->executable_path("invader-build").string().c_str());
+        this->process = new QProcess(this);
+        this->process->setProgram(this->main_window->executable_path("invader-build").string().c_str());
         
         // Set arguments
         QStringList arguments;
@@ -93,14 +98,15 @@ namespace SixShooter {
             arguments << "--tags" << i.string().c_str();
         }
         
+        arguments << "--maps" << this->main_window->get_maps_directory().string().c_str();
         arguments << "--game-engine" << build_type[this->engine->currentIndex()][1];
+        
         arguments << this->scenario_path->text();
         
-        process.setArguments(arguments);
-        
-        // Begin
-        if(!process.startDetached()) {
-            std::printf("Failed to start invader-edit-qt... -.-\n");
-        }
+        // Invoke
+        this->process->setArguments(arguments);
+        this->console_box->attach_to_process(this->process);
+        this->console_box->clear();
+        this->process->start();
     }
 }
