@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #include <QProcess>
+#include <QKeyEvent>
 
 #include "map_builder.hpp"
 #include "main_window.hpp"
@@ -51,13 +52,13 @@ namespace SixShooter {
             auto *tag_editing_box = new QGroupBox("Tag editing", window_widget);
             auto *tag_editing_layout = new QVBoxLayout(tag_editing_box);
             
-            auto *tag_editor_safe = new QPushButton("Launch invader-edit-qt", tag_editing_box);
-            connect(tag_editor_safe, &QPushButton::clicked, this, &MainWindow::start_tag_editor_safe);
-            tag_editing_layout->addWidget(tag_editor_safe);
+            this->invader_edit_qt_button = new QPushButton("Launch invader-edit-qt", tag_editing_box);
+            connect(this->invader_edit_qt_button, &QPushButton::clicked, this, &MainWindow::start_tag_editor_safe);
+            tag_editing_layout->addWidget(this->invader_edit_qt_button);
             
-            auto *tag_editor_unsafe = new QPushButton("Launch invader-edit-qt (Unsafe mode)", tag_editing_box);
-            connect(tag_editor_unsafe, &QPushButton::clicked, this, &MainWindow::start_tag_editor_unsafe);
-            tag_editing_layout->addWidget(tag_editor_unsafe);
+            this->invader_edit_qt_unsafe_button = new QPushButton("Launch invader-edit-qt (Unsafe mode)", tag_editing_box);
+            connect(this->invader_edit_qt_unsafe_button, &QPushButton::clicked, this, &MainWindow::start_tag_editor_unsafe);
+            tag_editing_layout->addWidget(this->invader_edit_qt_unsafe_button);
             
             auto *tag_extractor = new QPushButton("Extract tags", tag_editing_box);
             connect(tag_extractor, &QPushButton::clicked, this, &MainWindow::start_tag_extractor);
@@ -89,7 +90,6 @@ namespace SixShooter {
         // Finish up
         window_widget->setLayout(window_layout);
         this->setCentralWidget(window_widget);
-        this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
     }
     
     void MainWindow::start_tag_editor(bool disable_safeguards) {
@@ -273,5 +273,31 @@ namespace SixShooter {
     
     std::filesystem::path MainWindow::get_invader_directory() const {
         return this->invader_path;
+    }
+    
+    void MainWindow::keyPressEvent(QKeyEvent *event) {
+        if(event->key() == Qt::Key::Key_Shift) {
+            this->invader_edit_qt_button->setHidden(true);
+            this->invader_edit_qt_unsafe_button->setHidden(false);
+        }
+        QMainWindow::keyPressEvent(event);
+    }
+    
+    void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+        if(event->key() == Qt::Key::Key_Shift) {
+            this->invader_edit_qt_unsafe_button->setHidden(true);
+            this->invader_edit_qt_button->setHidden(false);
+        }
+        QMainWindow::keyPressEvent(event);
+    }
+    
+    void MainWindow::show() {
+        QMainWindow::show();
+        this->invader_edit_qt_button->setMinimumWidth(this->invader_edit_qt_unsafe_button->width());
+        this->setMinimumHeight(this->height());
+        this->setMinimumWidth(this->width());
+        this->setMaximumHeight(this->height());
+        this->setMaximumWidth(this->width());
+        this->invader_edit_qt_unsafe_button->setVisible(false);
     }
 }

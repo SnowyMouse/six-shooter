@@ -7,6 +7,8 @@
 #include <filesystem>
 #include <vector>
 
+class QPushButton;
+
 namespace SixShooter {
     class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -20,6 +22,8 @@ namespace SixShooter {
         std::filesystem::path get_invader_directory() const;
         
         static bool invader_path_is_valid(const std::filesystem::path &path);
+        
+        void show();
         
     private:
         bool reload_settings();
@@ -36,6 +40,12 @@ namespace SixShooter {
         std::filesystem::path invader_path;
         std::filesystem::path maps_directory;
         std::vector<std::filesystem::path> tags_directories;
+        
+        QPushButton *invader_edit_qt_button;
+        QPushButton *invader_edit_qt_unsafe_button;
+        
+        void keyPressEvent(QKeyEvent *event) override;
+        void keyReleaseEvent(QKeyEvent *event) override;
     };
 }
 
