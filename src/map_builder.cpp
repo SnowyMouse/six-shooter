@@ -84,6 +84,7 @@ namespace SixShooter {
             auto *index_path_finder_layout = new QHBoxLayout(index_path_finder);
             index_path_finder_layout->setMargin(0);
             this->index_path = new QLineEdit(index_path_finder);
+            this->index_path->setPlaceholderText("None");
             index_path_finder_layout->addWidget(this->index_path);
             auto *find_index_button = new QPushButton("Find...", index_path_finder);
             index_path_finder_layout->addWidget(find_index_button);
@@ -94,6 +95,7 @@ namespace SixShooter {
             
             // CRC32
             this->crc32 = new QLineEdit(options_widget);
+            this->crc32->setPlaceholderText("None");
             options_main_layout->addWidget(new QLabel("CRC32:", options_widget), 5, 0);
             options_main_layout->addWidget(this->crc32, 5, 1);
             
