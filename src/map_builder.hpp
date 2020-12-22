@@ -31,6 +31,8 @@ namespace SixShooter {
         QLineEdit *index_path;
         QLineEdit *crc32;
         
+        void keyPressEvent(QKeyEvent *e) override;
+        
         void compile_map();
         void find_index_path();
         void find_scenario_path();

@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QProcess>
 #include <QCheckBox>
+#include <QKeyEvent>
 
 #include "tag_tree_dialog.hpp"
 #include "console_box.hpp"
@@ -280,6 +281,18 @@ namespace SixShooter {
         dialog.set_data(list);
         if(dialog.exec()) {
             this->scenario_path->setText(std::filesystem::path(dialog.get_result().toStdString()).stem().string().c_str());
+        }
+    }
+    
+    void MapBuilder::keyPressEvent(QKeyEvent *e) {
+        switch(e->key()) {
+            case Qt::Key::Key_Enter:
+            case Qt::Key::Key_Return:
+                this->compile_map();
+                e->accept();
+                return;
+            default:
+                QDialog::keyPressEvent(e);
         }
     }
 }
