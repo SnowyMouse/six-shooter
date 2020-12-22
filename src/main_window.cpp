@@ -15,6 +15,7 @@
 
 #include "map_builder.hpp"
 #include "main_window.hpp"
+#include "map_extractor.hpp"
 #include "settings_editor.hpp"
 
 namespace SixShooter {
@@ -179,7 +180,15 @@ namespace SixShooter {
     }
     
     void MainWindow::start_tag_extractor() {
-        std::printf("stub\n");
+        QFileDialog qfd;
+        qfd.setOptions(QFileDialog::Option::ReadOnly);
+        qfd.setNameFilter("Maps (*.map)");
+        qfd.setWindowTitle("Please open the map you want to extract");
+        qfd.setDirectory(this->maps_directory.string().c_str());
+        
+        if(qfd.exec()) {
+            MapExtractor(this, qfd.selectedFiles()[0].toStdString()).exec();
+        }
     }
     
     void MainWindow::start_map_builder() {
