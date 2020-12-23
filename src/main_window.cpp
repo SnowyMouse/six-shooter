@@ -31,7 +31,7 @@ namespace SixShooter {
         this->setWindowTitle("Six Shooter");
         
         #ifdef _WIN32
-        Theme::set_theme();
+        Theme::set_win32_theme();
         #endif
         
         // Reload these
