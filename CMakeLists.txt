@@ -34,7 +34,7 @@ add_executable(six-shooter
 
 if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
-    target_sources(six-shooter PRIVATE src/windows.rc)
+    target_sources(six-shooter PRIVATE src/windows.rc src/theme.cpp)
 endif()
 
 target_link_libraries(six-shooter Qt5::Widgets)

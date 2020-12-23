@@ -22,9 +22,17 @@
 #include "tag_bludgeoner.hpp"
 #include "settings.hpp"
 
+#ifdef _WIN32
+#include "theme.hpp"
+#endif
+
 namespace SixShooter {
     MainWindow::MainWindow() {
         this->setWindowTitle("Six Shooter");
+        
+        #ifdef _WIN32
+        Theme::set_theme();
+        #endif
         
         // Reload these
         if(!this->reload_settings()) {
