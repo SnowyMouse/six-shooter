@@ -214,7 +214,7 @@ namespace SixShooter {
         process.start();
         process.waitForFinished(-1);
         
-        return QString(process.readAllStandardOutput()).trimmed();
+        return QString(process.readAllStandardOutput()).replace("\r", "").trimmed();
     }
     
     void MapExtractor::reload_info() {
