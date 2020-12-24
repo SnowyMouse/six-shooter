@@ -17,7 +17,7 @@ namespace SixShooter {
         this->setReadOnly(true);
         auto font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         
-        this->setMinimumWidth(QFontMetrics(font).horizontalAdvance('m') * 80 + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + qApp->style()->pixelMetric(QStyle::PM_DefaultFrameWidth) * 2);
+        this->setMinimumWidth(QFontMetrics(font).horizontalAdvance('m') * 86 + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + qApp->style()->pixelMetric(QStyle::PM_DefaultFrameWidth) * 2);
         this->setMinimumHeight(QFontMetrics(font).ascent() * 24);
         this->setFont(font);
         this->setWordWrapMode(QTextOption::WrapMode::WrapAnywhere);
