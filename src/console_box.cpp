@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QProcess>
 #include <QScrollBar>
+#include <QTextDocument>
 
 #include "console_box.hpp"
 
@@ -17,12 +18,18 @@ namespace SixShooter {
         this->setReadOnly(true);
         auto font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         
-        this->setMinimumWidth(QFontMetrics(font).horizontalAdvance('m') * 86 + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + qApp->style()->pixelMetric(QStyle::PM_DefaultFrameWidth) * 2);
-        this->setMinimumHeight(QFontMetrics(font).ascent() * 24);
+        auto margins = this->contentsMargins();
+        auto document_margin = this->document()->documentMargin();
+        
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
         this->setFont(font);
         this->setWordWrapMode(QTextOption::WrapMode::WrapAnywhere);
+        auto font_metrics = QFontMetrics(font);
+        auto *style = qApp->style();
+        this->setFixedWidth(font_metrics.horizontalAdvance("It seems that this whole sentence is exactly eighty characters in string length.") + style->pixelMetric(QStyle::PM_ScrollBarExtent) + this->frameWidth() * 2 + margins.left() + margins.right() + document_margin * 2);
+        this->setMinimumHeight(font_metrics.ascent() * 24 + this->frameWidth() * 2 + margins.top() + margins.bottom() + document_margin * 2);
         
-        this->setStyleSheet("QTextEdit { background-color: #000; }");
+        this->setStyleSheet("QTextEdit { background-color: #000; color: " TEXT_COLOR ";}");
     }
     
     void ConsoleBox::attach_to_process(QProcess *process, OutputChannel channel) {
