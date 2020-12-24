@@ -31,10 +31,10 @@ namespace SixShooter {
         ConsoleBox *console_box_stdout;
         ConsoleBox *console_box_stderr;
         
-        void set_ready(QProcess::ProcessState);
+        void reject() override;
         
+        void set_ready(QProcess::ProcessState);
         void bludgeon_tags();
-        ~TagBludgeoner();
     };
 }
 

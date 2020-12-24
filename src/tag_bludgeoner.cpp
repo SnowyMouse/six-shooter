@@ -12,6 +12,7 @@
 #include <QTreeWidget>
 #include <QPushButton>
 #include <QHeaderView>
+#include <QMessageBox>
 #include <QFileIconProvider>
 
 #include "console_box.hpp"
@@ -136,12 +137,6 @@ namespace SixShooter {
         }
     }
     
-    TagBludgeoner::~TagBludgeoner() {
-        if(this->process != nullptr) {
-            this->process->waitForFinished(-1);
-        }
-    }
-    
     void TagBludgeoner::set_ready(QProcess::ProcessState state) {
         this->bludgeon_button->setEnabled(state == QProcess::ProcessState::NotRunning);
     }
@@ -171,5 +166,25 @@ namespace SixShooter {
         this->console_box_stdout->attach_to_process(this->process, ConsoleBox::StandardOutput);
         this->console_box_stderr->attach_to_process(this->process, ConsoleBox::StandardError);
         this->process->start();
+    }
+    
+    void TagBludgeoner::reject() {
+        if(this->process) {
+            if(this->process->state() == QProcess::ProcessState::Running) {
+                QMessageBox qmb;
+                qmb.setWindowTitle("Tag bludgeoning in progress");
+                qmb.setText("Are you sure you want to stop bludgeoning tags?\n\nAborting the bludgeon process may leave your tags directory in an inconsistent or potentially corrupted state.");
+                qmb.setStandardButtons(QMessageBox::StandardButton::Abort | QMessageBox::StandardButton::Cancel);
+                qmb.setIcon(QMessageBox::Icon::Warning);
+                if(qmb.exec() == QMessageBox::StandardButton::Cancel) {
+                    return;
+                }
+                this->process->kill();
+                this->process->waitForFinished(-1);
+            }
+            delete this->process;
+            this->process = nullptr;
+        }
+        QDialog::reject();
     }
 }

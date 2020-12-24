@@ -93,9 +93,9 @@ namespace SixShooter {
             tags_layout->addWidget(this->map_tags);
             
             // Extract button
-            auto *extract_button = new QPushButton("Extract all tags", tags_widget);
-            connect(extract_button, &QPushButton::clicked, this, &MapExtractor::extract_full_map);
-            tags_layout->addWidget(extract_button);
+            this->extract_button = new QPushButton("Extract all tags", tags_widget);
+            connect(this->extract_button, &QPushButton::clicked, this, &MapExtractor::extract_full_map);
+            tags_layout->addWidget(this->extract_button);
             
             tags_widget->setLayout(tags_layout);
             left_layout->addWidget(tags_widget);
@@ -143,10 +143,9 @@ namespace SixShooter {
         this->reload_info();
     }
     
-    MapExtractor::~MapExtractor() {
-        if(this->process != nullptr) {
-            this->process->kill();
-        }
+    void MapExtractor::set_ready(QProcess::ProcessState state) {
+        this->extract_button->setEnabled(state == QProcess::ProcessState::NotRunning);
+        this->map_tags->setEnabled(state == QProcess::ProcessState::NotRunning);
     }
     
     void MapExtractor::extract_map(const std::vector<std::string> &filter, bool recursive, bool overwrite_anyway) {
@@ -158,6 +157,7 @@ namespace SixShooter {
         
         // Process
         this->process = new QProcess(this);
+        connect(this->process, &QProcess::stateChanged, this, &MapExtractor::set_ready);
         this->process->setProgram(this->main_window->executable_path("invader-extract").string().c_str());
         
         // Set arguments
@@ -283,5 +283,25 @@ namespace SixShooter {
             process.start();
             process.waitForFinished(-1);
         }
+    }
+    
+    void MapExtractor::reject() {
+        if(this->process) {
+            if(this->process->state() == QProcess::ProcessState::Running) {
+                QMessageBox qmb;
+                qmb.setWindowTitle("Tag extraction in progress");
+                qmb.setText("Are you sure you want to stop extracting tags?\n\nAborting the extraction process may leave your tags directory in an inconsistent or potentially corrupted state.");
+                qmb.setIcon(QMessageBox::Icon::Warning);
+                qmb.setStandardButtons(QMessageBox::StandardButton::Abort | QMessageBox::StandardButton::Cancel);
+                if(qmb.exec() == QMessageBox::StandardButton::Cancel) {
+                    return;
+                }
+                this->process->kill();
+                this->process->waitForFinished(-1);
+            }
+            delete this->process;
+            this->process = nullptr;
+        }
+        QDialog::reject();
     }
 }

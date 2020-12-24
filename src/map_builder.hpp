@@ -4,11 +4,12 @@
 #define SIX_SHOOTER_MAP_BUILDER_HPP
 
 #include <QDialog>
+#include <QProcess>
 
 class QLineEdit;
 class QComboBox;
-class QProcess;
 class QCheckBox;
+class QPushButton;
 
 namespace SixShooter {
     class MainWindow;
@@ -27,12 +28,16 @@ namespace SixShooter {
         QComboBox *compression;
         QCheckBox *optimize;
         QComboBox *raw_data;
+        QPushButton *build_button;
         QProcess *process = nullptr;
         QLineEdit *index_path;
         QLineEdit *crc32;
         QLineEdit *rename_scenario;
         
         void keyPressEvent(QKeyEvent *e) override;
+        void reject() override;
+        
+        void set_ready(QProcess::ProcessState);
         
         void compile_map();
         void find_index_path();

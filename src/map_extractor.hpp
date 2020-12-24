@@ -4,6 +4,7 @@
 #define SIX_SHOOTER_MAP_EXTRACTOR_HPP
 
 #include <QDialog>
+#include <QProcess>
 #include <string>
 #include <vector>
 #include <filesystem>
@@ -11,8 +12,8 @@
 class QLineEdit;
 class QComboBox;
 class QCheckBox;
-class QProcess;
 class QTreeWidget;
+class QPushButton;
 class QTreeWidgetItem;
 
 namespace SixShooter {
@@ -40,18 +41,20 @@ namespace SixShooter {
         QCheckBox *overwrite;
         QCheckBox *ignore_resources;
         QCheckBox *use_maps_preferences;
+        QPushButton *extract_button;
         
         void extract_full_map();
         void extract_map(const std::vector<std::string> &filter = std::vector<std::string>(), bool recursive = false, bool overwrite_anyway = false);
         void find_map_path();
         void reload_info();
         
+        void set_ready(QProcess::ProcessState);
+        
         QString get_map_info(const char *what) const;
+        void reject() override;
         
         void double_clicked(QTreeWidgetItem *item, int column);
         void generate_index_file();
-        
-        ~MapExtractor();
     };
 }
 

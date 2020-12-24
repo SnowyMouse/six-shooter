@@ -9,6 +9,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QProcess>
 #include <QCheckBox>
 #include <QKeyEvent>
@@ -128,9 +129,9 @@ namespace SixShooter {
             options_layout->addWidget(dummy_widget);
             
             // Build button
-            auto *compile_button = new QPushButton("Compile map", options_widget);
-            connect(compile_button, &QPushButton::clicked, this, &MapBuilder::compile_map);
-            options_layout->addWidget(compile_button);
+            this->build_button = new QPushButton("Compile map", options_widget);
+            connect(this->build_button, &QPushButton::clicked, this, &MapBuilder::compile_map);
+            options_layout->addWidget(this->build_button);
             
             // Set the layout
             options_widget->setLayout(options_layout);
@@ -176,6 +177,7 @@ namespace SixShooter {
         // Process
         this->process = new QProcess(this);
         this->process->setProgram(this->main_window->executable_path("invader-build").string().c_str());
+        connect(this->process, &QProcess::stateChanged, this, &MapBuilder::set_ready);
         
         // Set arguments
         QStringList arguments;
@@ -308,5 +310,29 @@ namespace SixShooter {
             default:
                 QDialog::keyPressEvent(e);
         }
+    }
+    
+    void MapBuilder::set_ready(QProcess::ProcessState state) {
+        this->build_button->setEnabled(state == QProcess::ProcessState::NotRunning);
+    }
+    
+    void MapBuilder::reject() {
+        if(this->process) {
+            if(this->process->state() == QProcess::ProcessState::Running) {
+                QMessageBox qmb;
+                qmb.setWindowTitle("Map compilation in progress");
+                qmb.setText("Are you sure you want to stop building the map?");
+                qmb.setStandardButtons(QMessageBox::StandardButton::Abort | QMessageBox::StandardButton::Cancel);
+                qmb.setIcon(QMessageBox::Icon::Question);
+                if(qmb.exec() == QMessageBox::StandardButton::Cancel) {
+                    return;
+                }
+                this->process->kill();
+                this->process->waitForFinished(-1);
+            }
+            delete this->process;
+            this->process = nullptr;
+        }
+        QDialog::reject();
     }
 }
