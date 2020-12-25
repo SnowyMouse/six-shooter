@@ -9,14 +9,15 @@
 #include <vector>
 #include <filesystem>
 
+#include "console_dialog.hpp"
+
 class QComboBox;
 class QPushButton;
 
 namespace SixShooter {
     class MainWindow;
-    class ConsoleBox;
     
-    class TagBludgeoner : public QDialog {
+    class TagBludgeoner : public ConsoleDialog {
         Q_OBJECT
         friend class MainWindow;
         
@@ -28,8 +29,6 @@ namespace SixShooter {
         QComboBox *level;
         QPushButton *bludgeon_button;
         QProcess *process = nullptr;
-        ConsoleBox *console_box_stdout;
-        ConsoleBox *console_box_stderr;
         
         void reject() override;
         

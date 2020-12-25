@@ -6,6 +6,8 @@
 #include <QDialog>
 #include <QProcess>
 
+#include "console_dialog.hpp"
+
 class QLineEdit;
 class QComboBox;
 class QCheckBox;
@@ -13,9 +15,8 @@ class QPushButton;
 
 namespace SixShooter {
     class MainWindow;
-    class ConsoleBox;
     
-    class MapBuilder : public QDialog {
+    class MapBuilder : public ConsoleDialog {
         Q_OBJECT
         friend class MainWindow;
     private:

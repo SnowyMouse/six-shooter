@@ -29,6 +29,7 @@ add_executable(six-shooter
     src/tag_tree_widget.cpp
     src/settings.cpp
     src/tag_tree_dialog.cpp
+    src/console_dialog.cpp
     src/universal.qrc
 )
 

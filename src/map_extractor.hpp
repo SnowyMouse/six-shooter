@@ -9,6 +9,8 @@
 #include <vector>
 #include <filesystem>
 
+#include "console_dialog.hpp"
+
 class QLineEdit;
 class QComboBox;
 class QCheckBox;
@@ -18,10 +20,9 @@ class QTreeWidgetItem;
 
 namespace SixShooter {
     class MainWindow;
-    class ConsoleBox;
     class TagTreeWidget;
     
-    class MapExtractor : public QDialog {
+    class MapExtractor : public ConsoleDialog {
         Q_OBJECT
         friend class MainWindow;
     private:
@@ -33,8 +34,6 @@ namespace SixShooter {
         QComboBox *tags;
         QProcess *process = nullptr;
         QLineEdit *map_path;
-        ConsoleBox *console_box_stdout;
-        ConsoleBox *console_box_stderr;
         
         TagTreeWidget *map_tags;
         QCheckBox *non_mp_globals;

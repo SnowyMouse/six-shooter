@@ -105,29 +105,7 @@ namespace SixShooter {
         main_layout->addWidget(left_widget);
         
         // Add a console on the right
-        {
-            auto *console_widget = new QWidget();
-            auto *console_layout = new QVBoxLayout(console_widget);
-            console_layout->setContentsMargins(0, 0, 0, 0);
-            
-            auto *stdout_widget = new QGroupBox("Output", this);
-            auto *stdout_layout = new QVBoxLayout(stdout_widget);
-            this->console_box_stdout = new ConsoleBox(console_widget);
-            stdout_layout->addWidget(this->console_box_stdout);
-            stdout_widget->setLayout(stdout_layout);
-            console_layout->addWidget(stdout_widget);
-            
-            auto *stderr_widget = new QGroupBox("Errors", this);
-            auto *stderr_layout = new QVBoxLayout(stderr_widget);
-            this->console_box_stderr = new ConsoleBox(console_widget);
-            stderr_layout->addWidget(this->console_box_stderr);
-            stderr_widget->setLayout(stderr_layout);
-            console_layout->addWidget(stderr_widget);
-            
-            console_widget->setLayout(console_layout);
-            console_widget->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Expanding);
-            main_layout->addWidget(console_widget);
-        }
+        main_layout->addWidget(this->get_console_widget());
         
         // Set this
         auto screen_geometry = QGuiApplication::primaryScreen()->geometry();
@@ -192,8 +170,7 @@ namespace SixShooter {
         
         // Invoke
         this->process->setArguments(arguments);
-        this->console_box_stdout->attach_to_process(this->process, ConsoleBox::StandardOutput);
-        this->console_box_stderr->attach_to_process(this->process, ConsoleBox::StandardError);
+        this->attach_to_process(this->process);
         this->process->start();
     }
     
@@ -220,8 +197,7 @@ namespace SixShooter {
     void MapExtractor::reload_info() {
         QProcess process;
         process.setProgram(this->main_window->executable_path("invader-info").string().c_str());
-        this->console_box_stdout->attach_to_process(&process, ConsoleBox::OutputChannel::StandardOutput);
-        this->console_box_stderr->attach_to_process(&process, ConsoleBox::OutputChannel::StandardError);
+        this->attach_to_process(&process);
         process.setArguments(QStringList(this->path.string().c_str()));
         process.start();
         process.waitForFinished(-1);
@@ -276,7 +252,7 @@ namespace SixShooter {
             // Spawn a new one
             QProcess process(this);
             process.setProgram(this->main_window->executable_path("invader-index").string().c_str());
-            console_box_stderr->attach_to_process(&process, ConsoleBox::OutputChannel::StandardError);
+            this->attach_to_process(&process);
             QStringList arguments;
             arguments << this->path.string().c_str() << path;
             process.setArguments(arguments);
