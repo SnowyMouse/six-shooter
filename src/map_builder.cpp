@@ -21,11 +21,14 @@
 #include "settings.hpp"
 
 namespace SixShooter {
+    static constexpr const char *default_xbox_build_string = "01.10.12.2276";
+    
     static const char *build_type[][2] = {
         {"Halo PC (Custom Edition)", "custom"},
         {"Halo PC (Retail)", "retail"},
         {"Halo PC (Demo)", "demo"},
         {"Halo PC (Custom Edition with CEA compression)", "mcc-custom"},
+        {"Halo Xbox", "xbox"},
     };
     
     static const char *compression_type[][2] = {
@@ -73,6 +76,8 @@ namespace SixShooter {
             options_main_layout->addWidget(new QLabel("Engine:", options_widget), 1, 0);
             options_main_layout->addWidget(this->engine, 1, 1);
             
+            connect(this->engine, &QComboBox::currentTextChanged, this, &MapBuilder::toggle_build_string_visibility);
+            
             // Compression type
             this->compression = new QComboBox(options_widget);
             for(auto &i : compression_type) {
@@ -119,9 +124,16 @@ namespace SixShooter {
             options_main_layout->addWidget(this->crc32, 6, 1);
             
             // CRC32
+            this->build_string = new QLineEdit(options_widget);
+            this->build_string->setPlaceholderText(default_xbox_build_string);
+            this->build_string_label = new QLabel("Build string:", options_widget);
+            options_main_layout->addWidget(this->build_string_label, 7, 0);
+            options_main_layout->addWidget(this->build_string, 7, 1);
+            
+            // CRC32
             this->optimize = new QCheckBox(options_widget);
-            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 7, 0);
-            options_main_layout->addWidget(this->optimize, 7, 1);
+            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 8, 0);
+            options_main_layout->addWidget(this->optimize, 8, 1);
             
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
@@ -169,6 +181,15 @@ namespace SixShooter {
         
         arguments << "--game-engine" << build_type[this->engine->currentIndex()][1];
         settings.setValue("last_compiled_scenario_engine", this->engine->currentText());
+        
+        if(this->engine->currentIndex() == 4) {
+            auto build_string = this->build_string->text();
+            settings.setValue("last_compiled_build_string", build_string);
+            if(build_string == "") {
+                build_string = default_xbox_build_string;
+            }
+            arguments << "--build-version" << build_string;
+        }
         
         auto *compressed = compression_type[this->compression->currentIndex()][1];
         if(compressed) {
@@ -226,6 +247,14 @@ namespace SixShooter {
         this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());
         this->optimize->setChecked(settings.value("last_compiled_optimize", false).toBool());
         this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
+        this->build_string->setText(settings.value("last_compiled_scenario_engine", QString("")).toString());
+        
+        this->toggle_build_string_visibility();
+    }
+    
+    void MapBuilder::toggle_build_string_visibility() {
+        this->build_string->setVisible(this->engine->currentIndex() == 4);
+        this->build_string_label->setVisible(this->engine->currentIndex() == 4);
     }
     
     void MapBuilder::find_index_path() {

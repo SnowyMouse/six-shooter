@@ -12,6 +12,7 @@ class QLineEdit;
 class QComboBox;
 class QCheckBox;
 class QPushButton;
+class QLabel;
 
 namespace SixShooter {
     class MainWindow;
@@ -32,8 +33,10 @@ namespace SixShooter {
         QPushButton *build_button;
         QProcess *process = nullptr;
         QLineEdit *index_path;
+        QLineEdit *build_string;
         QLineEdit *crc32;
         QLineEdit *rename_scenario;
+        QLabel *build_string_label;
         
         void keyPressEvent(QKeyEvent *e) override;
         void reject() override;
@@ -43,6 +46,7 @@ namespace SixShooter {
         void compile_map();
         void find_index_path();
         void find_scenario_path();
+        void toggle_build_string_visibility();
         
         void restore_settings();
     };
