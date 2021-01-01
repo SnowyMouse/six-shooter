@@ -31,10 +31,8 @@ namespace SixShooter {
         {"Halo Xbox", "xbox"},
     };
     
-    static const char *compression_type[][2] = {
-        {"Automatic", nullptr},
-        {"Compressed", "--compress"},
-        {"Uncompressed", "--uncompressed"}
+    static const char *compression_type[] = {
+        "Automatic", "Compressed (Best)", "Compressed (Good)", "Compressed (Fast)", "Compressed (Fastest)", "Uncompressed"
     };
     
     static const char *raw_data_type[][2] = {
@@ -81,7 +79,7 @@ namespace SixShooter {
             // Compression type
             this->compression = new QComboBox(options_widget);
             for(auto &i : compression_type) {
-                this->compression->addItem(i[0]);
+                this->compression->addItem(i);
             }
             options_main_layout->addWidget(new QLabel("Compression:", options_widget), 2, 0);
             options_main_layout->addWidget(this->compression, 2, 1);
@@ -182,7 +180,9 @@ namespace SixShooter {
         arguments << "--game-engine" << build_type[this->engine->currentIndex()][1];
         settings.setValue("last_compiled_scenario_engine", this->engine->currentText());
         
-        if(this->engine->currentIndex() == 4) {
+        // Xbox?
+        bool is_xbox = this->engine->currentIndex() == 4;
+        if(is_xbox) {
             auto build_string = this->build_string->text();
             settings.setValue("last_compiled_build_string", build_string);
             if(build_string == "") {
@@ -191,9 +191,56 @@ namespace SixShooter {
             arguments << "--build-version" << build_string;
         }
         
-        auto *compressed = compression_type[this->compression->currentIndex()][1];
-        if(compressed) {
-            arguments << compressed;
+        auto compressed = this->compression->currentIndex();
+        if(compressed > 0) {
+            if(is_xbox) {
+                switch(compressed) {
+                    // Best
+                    case 1:
+                        arguments << "--level" << "9";
+                        break;
+                    // Good
+                    case 2:
+                        arguments << "--level" << "6";
+                        break;
+                    // Fast
+                    case 3:
+                        arguments << "--level" << "3";
+                        break;
+                    // Fastest
+                    case 4:
+                        arguments << "--level" << "1";
+                        break;
+                    // Uncompressed
+                    case 5:
+                        arguments << "--level" << "0";
+                        break;
+                }
+            }
+            else {
+                switch(compressed) {
+                    // Best
+                    case 1:
+                        arguments << "--level" << "19";
+                        break;
+                    // Good
+                    case 2:
+                        arguments << "--level" << "14";
+                        break;
+                    // Fast
+                    case 3:
+                        arguments << "--level" << "3";
+                        break;
+                    // Fastest
+                    case 4:
+                        arguments << "--level" << "0";
+                        break;
+                    // Uncompressed
+                    case 5:
+                        arguments << "--uncompressed";
+                        break;
+                }
+            }
         }
         settings.setValue("last_compiled_scenario_compressed", this->compression->currentText());
         
@@ -247,7 +294,7 @@ namespace SixShooter {
         this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());
         this->optimize->setChecked(settings.value("last_compiled_optimize", false).toBool());
         this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
-        this->build_string->setText(settings.value("last_compiled_scenario_engine", QString("")).toString());
+        this->build_string->setText(settings.value("last_compiled_build_string", QString("")).toString());
         
         this->toggle_build_string_visibility();
     }
