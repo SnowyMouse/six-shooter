@@ -59,37 +59,36 @@ namespace SixShooter {
             scenario_path_container_layout->setContentsMargins(0, 0, 0, 0);
             auto *find_scenario_button = new QPushButton("Find...", scenario_path_container);
             connect(find_scenario_button, &QPushButton::clicked, this, &MapBuilder::find_scenario_path);
-            this->scenario_path = new QLineEdit(scenario_path_container);
-            scenario_path_container_layout->addWidget(this->scenario_path);
+            scenario_path_container_layout->addWidget((this->scenario_path = new QLineEdit(scenario_path_container)));
             scenario_path_container_layout->addWidget(find_scenario_button);
             scenario_path_container->setLayout(scenario_path_container_layout);
             options_main_layout->addWidget(new QLabel("Scenario tag:"), 0, 0);
             options_main_layout->addWidget(scenario_path_container, 0, 1);
             
             // Map type
+            options_main_layout->addWidget(new QLabel("Engine:", options_widget), 1, 0);
             this->engine = new QComboBox(options_widget);
             for(auto &i : build_type) {
                 this->engine->addItem(i[0]);
             }
-            options_main_layout->addWidget(new QLabel("Engine:", options_widget), 1, 0);
             options_main_layout->addWidget(this->engine, 1, 1);
             
             connect(this->engine, &QComboBox::currentTextChanged, this, &MapBuilder::toggle_build_string_visibility);
             
             // Compression type
+            options_main_layout->addWidget(new QLabel("Compression:", options_widget), 2, 0);
             this->compression = new QComboBox(options_widget);
             for(auto &i : compression_type) {
                 this->compression->addItem(i);
             }
-            options_main_layout->addWidget(new QLabel("Compression:", options_widget), 2, 0);
             options_main_layout->addWidget(this->compression, 2, 1);
             
             // Compression type
+            options_main_layout->addWidget((this->raw_data_label = new QLabel("External data:", options_widget)), 3, 0);
             this->raw_data = new QComboBox(options_widget);
             for(auto &i : raw_data_type) {
                 this->raw_data->addItem(i[0]);
             }
-            options_main_layout->addWidget(new QLabel("External data:", options_widget), 3, 0);
             options_main_layout->addWidget(this->raw_data, 3, 1);
             
             options_main_layout_widget->setLayout(options_main_layout);
@@ -99,49 +98,47 @@ namespace SixShooter {
             auto *index_path_finder = new QWidget(options_widget);
             auto *index_path_finder_layout = new QHBoxLayout(index_path_finder);
             index_path_finder_layout->setContentsMargins(0, 0, 0, 0);
-            this->index_path = new QLineEdit(index_path_finder);
-            this->index_path->setPlaceholderText("None");
-            index_path_finder_layout->addWidget(this->index_path);
+            index_path_finder_layout->addWidget((this->index_path = new QLineEdit(index_path_finder)));
             auto *find_index_button = new QPushButton("Find...", index_path_finder);
             index_path_finder_layout->addWidget(find_index_button);
             index_path_finder->setLayout(index_path_finder_layout);
             options_main_layout->addWidget(new QLabel("Index file:", options_widget), 4, 0);
             options_main_layout->addWidget(index_path_finder, 4, 1);
             connect(find_index_button, &QPushButton::clicked, this, &MapBuilder::find_index_path);
+            this->index_path->setPlaceholderText("None");
             
             // Scenario
-            this->rename_scenario = new QLineEdit(options_widget);
-            this->rename_scenario->setPlaceholderText("None");
             options_main_layout->addWidget(new QLabel("Rename scenario:", options_widget), 5, 0);
-            options_main_layout->addWidget(this->rename_scenario, 5, 1);
+            options_main_layout->addWidget((this->rename_scenario = new QLineEdit(options_widget)), 5, 1);
+            this->rename_scenario->setPlaceholderText("None");
             
             // CRC32
-            this->crc32 = new QLineEdit(options_widget);
+            options_main_layout->addWidget((this->crc32_label = new QLabel("Forge CRC32:", options_widget)), 6, 0);
+            options_main_layout->addWidget((this->crc32 = new QLineEdit(options_widget)), 6, 1);
             this->crc32->setPlaceholderText("None");
-            options_main_layout->addWidget(new QLabel("CRC32:", options_widget), 6, 0);
-            options_main_layout->addWidget(this->crc32, 6, 1);
             
-            // CRC32
-            this->build_string = new QLineEdit(options_widget);
+            // Build string
+            options_main_layout->addWidget((this->build_string_label = new QLabel("Build string:", options_widget)), 7, 0);
+            options_main_layout->addWidget((this->build_string = new QLineEdit(options_widget)), 7, 1);
+            options_main_layout->addWidget((this->dummy_build_string = new QLineEdit(options_widget)), 7, 1);
             this->build_string->setPlaceholderText(default_xbox_build_string);
-            this->build_string_label = new QLabel("Build string:", options_widget);
-            options_main_layout->addWidget(this->build_string_label, 7, 0);
-            options_main_layout->addWidget(this->build_string, 7, 1);
             
-            // CRC32
-            this->optimize = new QCheckBox(options_widget);
+            // Tag space
             options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 8, 0);
-            options_main_layout->addWidget(this->optimize, 8, 1);
+            options_main_layout->addWidget((this->optimize = new QCheckBox(options_widget)), 8, 1);
+            
+            // File size
+            options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 9, 0);
+            options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 9, 1);
             
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
             dummy_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
             options_layout->addWidget(dummy_widget);
             
-            // Build button
-            this->build_button = new QPushButton("Compile map", options_widget);
+            // Build button;
+            options_layout->addWidget((this->build_button = new QPushButton("Compile map", options_widget)));
             connect(this->build_button, &QPushButton::clicked, this, &MapBuilder::compile_map);
-            options_layout->addWidget(this->build_button);
             
             // Set the layout
             options_widget->setLayout(options_layout);
@@ -245,7 +242,7 @@ namespace SixShooter {
         settings.setValue("last_compiled_scenario_compressed", this->compression->currentText());
         
         auto *raw_data = raw_data_type[this->raw_data->currentIndex()][1];
-        if(raw_data) {
+        if(raw_data && !is_xbox) {
             arguments << raw_data;
         }
         settings.setValue("last_compiled_scenario_raw_data", this->raw_data->currentText());
@@ -263,7 +260,7 @@ namespace SixShooter {
         settings.setValue("last_compiled_scenario_name", scenario_name);
         
         auto crc32 = this->crc32->text();
-        if(!crc32.isEmpty()) {
+        if(!crc32.isEmpty() && !is_xbox) {
             arguments << "--forge-crc" << crc32;
         }
         settings.setValue("last_compiled_scenario_crc32", crc32);
@@ -277,6 +274,12 @@ namespace SixShooter {
             arguments << "--optimize";
         }
         settings.setValue("last_compiled_optimize", optimize);
+        
+        bool bypass_file_size_limits = this->bypass_file_size_limits->isChecked();
+        if(bypass_file_size_limits) {
+            arguments << "--extend-file-limits";
+        }
+        settings.setValue("last_compiled_extended_file_size", bypass_file_size_limits);
         
         // Invoke
         this->process->setArguments(arguments);
@@ -293,6 +296,7 @@ namespace SixShooter {
         this->crc32->setText(settings.value("last_compiled_scenario_crc32", QString("")).toString());
         this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());
         this->optimize->setChecked(settings.value("last_compiled_optimize", false).toBool());
+        this->bypass_file_size_limits->setChecked(settings.value("last_compiled_extended_file_size", false).toBool());
         this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
         this->build_string->setText(settings.value("last_compiled_build_string", QString("")).toString());
         
@@ -300,8 +304,17 @@ namespace SixShooter {
     }
     
     void MapBuilder::toggle_build_string_visibility() {
-        this->build_string->setVisible(this->engine->currentIndex() == 4);
-        this->build_string_label->setVisible(this->engine->currentIndex() == 4);
+        bool is_xbox = this->engine->currentIndex() == 4;
+        
+        this->build_string->setVisible(is_xbox);
+        this->dummy_build_string->setVisible(!is_xbox);
+        this->build_string_label->setEnabled(is_xbox);
+        
+        this->raw_data->setEnabled(!is_xbox);
+        this->raw_data_label->setEnabled(!is_xbox);
+        
+        this->crc32->setEnabled(!is_xbox);
+        this->crc32_label->setEnabled(!is_xbox);
     }
     
     void MapBuilder::find_index_path() {

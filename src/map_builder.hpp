@@ -29,6 +29,7 @@ namespace SixShooter {
         QComboBox *engine;
         QComboBox *compression;
         QCheckBox *optimize;
+        QCheckBox *bypass_file_size_limits;
         QComboBox *raw_data;
         QPushButton *build_button;
         QProcess *process = nullptr;
@@ -36,7 +37,11 @@ namespace SixShooter {
         QLineEdit *build_string;
         QLineEdit *crc32;
         QLineEdit *rename_scenario;
+        QLineEdit *dummy_build_string;
+        
         QLabel *build_string_label;
+        QLabel *raw_data_label;
+        QLabel *crc32_label;
         
         void keyPressEvent(QKeyEvent *e) override;
         void reject() override;
