@@ -231,6 +231,6 @@ namespace SixShooter {
     }
     
     void SettingsEditor::modified_path(int row, int) {
-        this->tags_paths[row] = this->tags->itemAt(row, 0)->text().toStdString();
+        this->tags_paths[row] = this->tags->item(row, 0)->text().toStdString();
     }
 }
