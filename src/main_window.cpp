@@ -328,7 +328,7 @@ namespace SixShooter {
         auto *six_shooter_vlabel = new QLabel("Six Shooter version:", metadata_widget);
         six_shooter_vlabel->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
         metadata_layout->addWidget(six_shooter_vlabel, 0, 0);
-        auto *six_shooter_version = new QLabel("<b>0.1.4.0</b>", metadata_widget);
+        auto *six_shooter_version = new QLabel("<b>0.1.5.0</b>", metadata_widget);
         metadata_layout->addWidget(six_shooter_version, 0, 1);
         
         // Show invader version
@@ -349,7 +349,7 @@ namespace SixShooter {
         layout->addWidget(metadata_widget);
         
         // Lastly, show this blurb
-        auto *blurb = new QLabel("Copyright &copy; Snowy Mouse 2020\n\nThis program is licensed under version 3 of the GNU General Public License.\n\nThe original project's source code can be found at: https://github.com/SnowyMouse/six-shooter\n\n\nAdditional permissions as per section 7 of the GPL:\n\nIf you received this software without the source code and you cannot obtain it, you are hereby authorized\nto inform the person who gave you this software that they are a huge douche (and they broke the GPL).", this);
+        auto *blurb = new QLabel("Copyright &copy; Snowy Mouse 2020-2021\n\nThis program is licensed under version 3 of the GNU General Public License.\n\nThe original project's source code can be found at: https://github.com/SnowyMouse/six-shooter\n\n\nAdditional permissions as per section 7 of the GPL:\n\nIf you received this software without the source code and you cannot obtain it, you are hereby authorized\nto inform the person who gave you this software that they are a huge douche (and they broke the GPL).", this);
         blurb->setText(blurb->text().replace("  ", "&nbsp;&nbsp;"));
         blurb->setText(blurb->text().replace("\n", "<br />"));
         layout->addWidget(blurb);
