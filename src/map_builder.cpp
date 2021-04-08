@@ -21,14 +21,13 @@
 #include "settings.hpp"
 
 namespace SixShooter {
-    static constexpr const char *default_xbox_build_string = "01.10.12.2276";
-    
     static const char *build_type[][2] = {
-        {"Halo PC (Custom Edition)", "custom"},
-        {"Halo PC (Retail)", "retail"},
-        {"Halo PC (Demo)", "demo"},
-        {"Halo PC (Custom Edition with CEA compression)", "mcc-custom"},
-        {"Halo Xbox", "xbox"},
+        {"Halo PC (Custom Edition)", "pc-custom"},
+        {"Halo PC (Retail)", "pc-retail"},
+        {"Halo PC (Demo)", "pc-demo"},
+        {"Halo Xbox (English)", "xbox-2276"},
+        {"Halo Xbox (Japanese)", "xbox-0009"},
+        {"Halo Xbox (Taiwanese)", "xbox-0135"},
     };
     
     static const char *compression_type[] = {
@@ -121,7 +120,6 @@ namespace SixShooter {
             options_main_layout->addWidget((this->build_string_label = new QLabel("Build string:", options_widget)), 7, 0);
             options_main_layout->addWidget((this->build_string = new QLineEdit(options_widget)), 7, 1);
             options_main_layout->addWidget((this->dummy_build_string = new QLineEdit(options_widget)), 7, 1);
-            this->build_string->setPlaceholderText(default_xbox_build_string);
             
             // Tag space
             options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 8, 0);
@@ -130,6 +128,10 @@ namespace SixShooter {
             // File size
             options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 9, 0);
             options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 9, 1);
+            
+            // Tag space
+            options_main_layout->addWidget(this->increase_tag_space_label = new QLabel("Increase tag space:", options_widget), 10, 0);
+            options_main_layout->addWidget((this->increase_tag_space = new QCheckBox(options_widget)), 10, 1);
             
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
@@ -182,10 +184,9 @@ namespace SixShooter {
         if(is_xbox) {
             auto build_string = this->build_string->text();
             settings.setValue("last_compiled_build_string", build_string);
-            if(build_string == "") {
-                build_string = default_xbox_build_string;
+            if(build_string != "") {
+                arguments << "--build-version" << build_string;
             }
-            arguments << "--build-version" << build_string;
         }
         
         auto compressed = this->compression->currentIndex();
@@ -281,6 +282,12 @@ namespace SixShooter {
         }
         settings.setValue("last_compiled_extended_file_size", bypass_file_size_limits);
         
+        bool increase_tag_space = this->increase_tag_space->isChecked() && this->increase_tag_space->isEnabled();
+        if(increase_tag_space) {
+            arguments << "--tag-space" << "31M";
+        }
+        settings.setValue("increase_tag_space", increase_tag_space);
+        
         // Invoke
         this->process->setArguments(arguments);
         this->attach_to_process(this->process);
@@ -299,12 +306,12 @@ namespace SixShooter {
         this->bypass_file_size_limits->setChecked(settings.value("last_compiled_extended_file_size", false).toBool());
         this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
         this->build_string->setText(settings.value("last_compiled_build_string", QString("")).toString());
-        
+        this->increase_tag_space->setChecked(settings.value("increase_tag_space", false).toBool());
         this->toggle_build_string_visibility();
     }
     
     void MapBuilder::toggle_build_string_visibility() {
-        bool is_xbox = this->engine->currentIndex() == 4;
+        bool is_xbox = this->engine->currentIndex() >= 3;
         
         this->build_string->setVisible(is_xbox);
         this->dummy_build_string->setVisible(!is_xbox);
@@ -315,6 +322,9 @@ namespace SixShooter {
         
         this->crc32->setEnabled(!is_xbox);
         this->crc32_label->setEnabled(!is_xbox);
+        
+        this->increase_tag_space->setEnabled(!is_xbox);
+        this->increase_tag_space_label->setEnabled(!is_xbox);
     }
     
     void MapBuilder::find_index_path() {
