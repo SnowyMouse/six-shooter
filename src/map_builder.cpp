@@ -22,6 +22,7 @@
 
 namespace SixShooter {
     static const char *build_type[][2] = {
+        {"MCC (CEA)", "mcc-cea"},
         {"Halo PC (Custom Edition)", "pc-custom"},
         {"Halo PC (Retail)", "pc-retail"},
         {"Halo PC (Demo)", "pc-demo"},
@@ -31,7 +32,7 @@ namespace SixShooter {
     };
     
     static const char *compression_type[] = {
-        "Automatic", "Compressed (Best)", "Compressed (Good)", "Compressed (Fast)", "Compressed (Fastest)", "Uncompressed"
+        "Compressed (Best)", "Compressed (Good)", "Compressed (Fast)", "Compressed (Fastest)"
     };
     
     static const char *raw_data_type[][2] = {
@@ -75,7 +76,7 @@ namespace SixShooter {
             connect(this->engine, &QComboBox::currentTextChanged, this, &MapBuilder::toggle_build_string_visibility);
             
             // Compression type
-            options_main_layout->addWidget(new QLabel("Compression:", options_widget), 2, 0);
+            options_main_layout->addWidget((this->compression_label = new QLabel("Compression:", options_widget)), 2, 0);
             this->compression = new QComboBox(options_widget);
             for(auto &i : compression_type) {
                 this->compression->addItem(i);
@@ -129,10 +130,6 @@ namespace SixShooter {
             options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 9, 0);
             options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 9, 1);
             
-            // Tag space
-            options_main_layout->addWidget(this->increase_tag_space_label = new QLabel("Increase tag space:", options_widget), 10, 0);
-            options_main_layout->addWidget((this->increase_tag_space = new QCheckBox(options_widget)), 10, 1);
-            
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
             dummy_widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
@@ -180,64 +177,32 @@ namespace SixShooter {
         settings.setValue("last_compiled_scenario_engine", this->engine->currentText());
         
         // Xbox?
-        bool is_xbox = this->engine->currentIndex() == 4;
+        bool is_xbox = this->engine->currentIndex() >= 4;
         if(is_xbox) {
             auto build_string = this->build_string->text();
             settings.setValue("last_compiled_build_string", build_string);
             if(build_string != "") {
                 arguments << "--build-version" << build_string;
             }
-        }
-        
-        auto compressed = this->compression->currentIndex();
-        if(compressed > 0) {
-            if(is_xbox) {
-                switch(compressed) {
-                    // Best
-                    case 1:
-                        arguments << "--level" << "9";
-                        break;
-                    // Good
-                    case 2:
-                        arguments << "--level" << "6";
-                        break;
-                    // Fast
-                    case 3:
-                        arguments << "--level" << "3";
-                        break;
-                    // Fastest
-                    case 4:
-                        arguments << "--level" << "1";
-                        break;
-                    // Uncompressed
-                    case 5:
-                        arguments << "--level" << "0";
-                        break;
-                }
-            }
-            else {
-                switch(compressed) {
-                    // Best
-                    case 1:
-                        arguments << "--level" << "19";
-                        break;
-                    // Good
-                    case 2:
-                        arguments << "--level" << "14";
-                        break;
-                    // Fast
-                    case 3:
-                        arguments << "--level" << "3";
-                        break;
-                    // Fastest
-                    case 4:
-                        arguments << "--level" << "0";
-                        break;
-                    // Uncompressed
-                    case 5:
-                        arguments << "--uncompressed";
-                        break;
-                }
+            
+            auto compressed = this->compression->currentIndex();
+            switch(compressed) {
+                // Best
+                case 0:
+                    arguments << "--level" << "9";
+                    break;
+                // Good
+                case 1:
+                    arguments << "--level" << "6";
+                    break;
+                // Fast
+                case 2:
+                    arguments << "--level" << "3";
+                    break;
+                // Fastest
+                case 3:
+                    arguments << "--level" << "1";
+                    break;
             }
         }
         settings.setValue("last_compiled_scenario_compressed", this->compression->currentText());
@@ -282,12 +247,6 @@ namespace SixShooter {
         }
         settings.setValue("last_compiled_extended_file_size", bypass_file_size_limits);
         
-        bool increase_tag_space = this->increase_tag_space->isChecked() && this->increase_tag_space->isEnabled();
-        if(increase_tag_space) {
-            arguments << "--tag-space" << "31M";
-        }
-        settings.setValue("increase_tag_space", increase_tag_space);
-        
         // Invoke
         this->process->setArguments(arguments);
         this->attach_to_process(this->process);
@@ -306,12 +265,11 @@ namespace SixShooter {
         this->bypass_file_size_limits->setChecked(settings.value("last_compiled_extended_file_size", false).toBool());
         this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
         this->build_string->setText(settings.value("last_compiled_build_string", QString("")).toString());
-        this->increase_tag_space->setChecked(settings.value("increase_tag_space", false).toBool());
         this->toggle_build_string_visibility();
     }
     
     void MapBuilder::toggle_build_string_visibility() {
-        bool is_xbox = this->engine->currentIndex() >= 3;
+        bool is_xbox = this->engine->currentIndex() >= 4;
         
         this->build_string->setVisible(is_xbox);
         this->dummy_build_string->setVisible(!is_xbox);
@@ -323,8 +281,8 @@ namespace SixShooter {
         this->crc32->setEnabled(!is_xbox);
         this->crc32_label->setEnabled(!is_xbox);
         
-        this->increase_tag_space->setEnabled(!is_xbox);
-        this->increase_tag_space_label->setEnabled(!is_xbox);
+        this->compression->setEnabled(is_xbox);
+        this->compression_label->setEnabled(is_xbox);
     }
     
     void MapBuilder::find_index_path() {
