@@ -123,7 +123,7 @@ namespace SixShooter {
             options_main_layout->addWidget((this->dummy_build_string = new QLineEdit(options_widget)), 7, 1);
             
             // Use CEA things
-            options_main_layout->addWidget((this->anniversary_label = new QLabel("Enable \"anniversary\" mode:"), options_widget), 8, 0);
+            options_main_layout->addWidget((this->anniversary_label = new QLabel("Enable \"anniversary\" mode:", options_widget)), 8, 0);
             options_main_layout->addWidget((this->anniversary = new QCheckBox(options_widget)), 8, 1);
             
             // Tag space
