@@ -36,9 +36,9 @@ namespace SixShooter {
     };
     
     static const char *raw_data_type[][2] = {
-        {"Automatic", nullptr},
-        {"Self-contained", "--no-external-tags"},
-        {"Always index (Custom Edition only)", "--always-index-tags"}
+        {"Automatic", "check"},
+        {"Self-contained", "none"},
+        {"Always index (Custom Edition only)", "always"}
     };
     
     MapBuilder::MapBuilder(const MainWindow *main_window) : main_window(main_window) {
@@ -209,7 +209,7 @@ namespace SixShooter {
         
         auto *raw_data = raw_data_type[this->raw_data->currentIndex()][1];
         if(raw_data && !is_xbox) {
-            arguments << raw_data;
+            arguments << "--resource-maps" << raw_data;
         }
         settings.setValue("last_compiled_scenario_raw_data", this->raw_data->currentText());
         
