@@ -216,7 +216,7 @@ namespace SixShooter {
         
         auto *raw_data = raw_data_type[this->raw_data->currentIndex()][1];
         if(raw_data && !is_xbox) {
-            arguments << "--resource-maps" << raw_data;
+            arguments << "--resource-usage" << raw_data;
         }
         settings.setValue("last_compiled_scenario_raw_data", this->raw_data->currentText());
         
