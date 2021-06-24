@@ -122,13 +122,17 @@ namespace SixShooter {
             options_main_layout->addWidget((this->build_string = new QLineEdit(options_widget)), 7, 1);
             options_main_layout->addWidget((this->dummy_build_string = new QLineEdit(options_widget)), 7, 1);
             
+            // Use CEA things
+            options_main_layout->addWidget((this->anniversary_label = new QLabel("Enable \"anniversary\" mode:"), options_widget), 8, 0);
+            options_main_layout->addWidget((this->anniversary = new QCheckBox(options_widget)), 8, 1);
+            
             // Tag space
-            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 8, 0);
-            options_main_layout->addWidget((this->optimize = new QCheckBox(options_widget)), 8, 1);
+            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 9, 0);
+            options_main_layout->addWidget((this->optimize = new QCheckBox(options_widget)), 9, 1);
             
             // File size
-            options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 9, 0);
-            options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 9, 1);
+            options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 10, 0);
+            options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 10, 1);
             
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
@@ -207,6 +211,9 @@ namespace SixShooter {
         }
         settings.setValue("last_compiled_scenario_compressed", this->compression->currentText());
         
+        // CEA stuff
+        bool is_cea = this->engine->currentIndex() == 0;
+        
         auto *raw_data = raw_data_type[this->raw_data->currentIndex()][1];
         if(raw_data && !is_xbox) {
             arguments << "--resource-maps" << raw_data;
@@ -218,6 +225,12 @@ namespace SixShooter {
             arguments << "--with-index" << index_path;
         }
         settings.setValue("last_compiled_scenario_index", index_path);
+        
+        auto anniversary = this->anniversary->isChecked();
+        if(is_cea && anniversary) {
+            arguments << "--anniversary-mode";
+        }
+        settings.setValue("last_compiled_anniversary", anniversary);
         
         auto scenario_name = this->rename_scenario->text();
         if(!scenario_name.isEmpty()) {
@@ -265,10 +278,12 @@ namespace SixShooter {
         this->bypass_file_size_limits->setChecked(settings.value("last_compiled_extended_file_size", false).toBool());
         this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
         this->build_string->setText(settings.value("last_compiled_build_string", QString("")).toString());
+        this->anniversary->setChecked(settings.value("last_compiled_anniversary", false).toBool());
         this->toggle_build_string_visibility();
     }
     
     void MapBuilder::toggle_build_string_visibility() {
+        bool is_cea = this->engine->currentIndex() == 0;
         bool is_xbox = this->engine->currentIndex() >= 4;
         
         this->build_string->setVisible(is_xbox);
@@ -283,6 +298,9 @@ namespace SixShooter {
         
         this->compression->setEnabled(is_xbox);
         this->compression_label->setEnabled(is_xbox);
+        
+        this->anniversary->setEnabled(is_cea);
+        this->anniversary_label->setEnabled(is_cea);
     }
     
     void MapBuilder::find_index_path() {
