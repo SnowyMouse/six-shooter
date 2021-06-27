@@ -53,6 +53,12 @@ namespace SixShooter {
             { "--mode", "no-move", "--class", "gbxmodel", "model" }
         },
         {
+            "Clean up (strip unused data - useful if modding Halo: CEA with official tools)",
+            1,
+            "invader-strip",
+            { "--all" }
+        },
+        {
             "Exodia (bludgeon everything - slow if on a toaster)",
             3,
             "invader-bludgeon",
