@@ -23,12 +23,13 @@
 namespace SixShooter {
     static const char *build_type[][2] = {
         {"MCC (CEA)", "mcc-cea"},
-        {"Halo PC (Custom Edition)", "pc-custom"},
-        {"Halo PC (Retail)", "pc-retail"},
-        {"Halo PC (Demo)", "pc-demo"},
-        {"Halo Xbox (English)", "xbox-2276"},
-        {"Halo Xbox (Japanese)", "xbox-0009"},
-        {"Halo Xbox (Taiwanese)", "xbox-0135"},
+        {"Halo PC (Custom Edition)", "gbx-custom"},
+        {"Halo PC (Retail)", "gbx-retail"},
+        {"Halo PC (Demo)", "gbx-demo"},
+        {"Halo Xbox (English NTSC)", "xbox-ntsc"},
+        {"Halo Xbox (English PAL)", "xbox-pal"},
+        {"Halo Xbox (Japanese)", "xbox-ntsc-jp"},
+        {"Halo Xbox (Taiwanese)", "xbox-ntsc-tw"},
     };
     
     static const char *compression_type[] = {
@@ -126,13 +127,21 @@ namespace SixShooter {
             options_main_layout->addWidget((this->anniversary_label = new QLabel("Enable \"anniversary\" mode:", options_widget)), 8, 0);
             options_main_layout->addWidget((this->anniversary = new QCheckBox(options_widget)), 8, 1);
             
+            // Automatically forge tag indices
+            options_main_layout->addWidget((this->auto_forge_label = new QLabel("Auto-forge tag indices:", options_widget)), 9, 0);
+            options_main_layout->addWidget((this->auto_forge = new QCheckBox(options_widget)), 9, 1);
+            
             // Tag space
-            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 9, 0);
-            options_main_layout->addWidget((this->optimize = new QCheckBox(options_widget)), 9, 1);
+            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 10, 0);
+            options_main_layout->addWidget((this->optimize = new QCheckBox(options_widget)), 10, 1);
             
             // File size
-            options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 10, 0);
-            options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 10, 1);
+            options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 11, 0);
+            options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 11, 1);
+            
+            // Pedantic warnings
+            options_main_layout->addWidget(new QLabel("Hide pedantic warnings:", options_widget), 12, 0);
+            options_main_layout->addWidget((this->hide_pedantic_warnings = new QCheckBox(options_widget)), 12, 1);
             
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
@@ -186,7 +195,7 @@ namespace SixShooter {
             auto build_string = this->build_string->text();
             settings.setValue("last_compiled_build_string", build_string);
             if(build_string != "") {
-                arguments << "--build-version" << build_string;
+                arguments << "--build-string" << build_string;
             }
             
             auto compressed = this->compression->currentIndex();
@@ -248,6 +257,12 @@ namespace SixShooter {
         arguments << this->scenario_path->text();
         settings.setValue("last_compiled_scenario", scenario);
         
+        auto auto_forge = this->auto_forge->isChecked();
+        if(!is_xbox && auto_forge) {
+            arguments << "--auto-forge";
+        }
+        settings.setValue("last_compiled_auto_forge", auto_forge);
+        
         bool optimize = this->optimize->isChecked();
         if(optimize) {
             arguments << "--optimize";
@@ -259,6 +274,12 @@ namespace SixShooter {
             arguments << "--extend-file-limits";
         }
         settings.setValue("last_compiled_extended_file_size", bypass_file_size_limits);
+        
+        bool hide_pedantic_warnings = this->hide_pedantic_warnings->isChecked();
+        if(hide_pedantic_warnings) {
+            arguments << "--hide-pedantic-warnings";
+        }
+        settings.setValue("last_compiled_hide_pedantic_warnings", hide_pedantic_warnings);
         
         // Invoke
         this->process->setArguments(arguments);
@@ -274,8 +295,10 @@ namespace SixShooter {
         this->index_path->setText(settings.value("last_compiled_scenario_index", QString("")).toString());
         this->crc32->setText(settings.value("last_compiled_scenario_crc32", QString("")).toString());
         this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());
+        this->auto_forge->setChecked(settings.value("last_compiled_auto_forge", false).toBool());
         this->optimize->setChecked(settings.value("last_compiled_optimize", false).toBool());
         this->bypass_file_size_limits->setChecked(settings.value("last_compiled_extended_file_size", false).toBool());
+        this->hide_pedantic_warnings->setChecked(settings.value("last_compiled_hide_pedantic_warnings", false).toBool());
         this->rename_scenario->setText(settings.value("last_compiled_scenario_name", QString("")).toString());
         this->build_string->setText(settings.value("last_compiled_build_string", QString("")).toString());
         this->anniversary->setChecked(settings.value("last_compiled_anniversary", false).toBool());
@@ -301,6 +324,9 @@ namespace SixShooter {
         
         this->anniversary->setEnabled(is_cea);
         this->anniversary_label->setEnabled(is_cea);
+
+        this->auto_forge->setEnabled(!is_xbox);
+        this->auto_forge_label->setEnabled(!is_xbox);
     }
     
     void MapBuilder::find_index_path() {
