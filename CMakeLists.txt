@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.12)
 
 # Project name - You should change this if you're making a fork
 project("Six Shooter"
-    VERSION 0.1.5
+    VERSION 0.1.6
     DESCRIPTION "GUI frontend for Invader tools"
     LANGUAGES C CXX
 )

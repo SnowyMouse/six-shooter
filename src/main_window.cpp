@@ -329,7 +329,7 @@ namespace SixShooter {
         auto *six_shooter_vlabel = new QLabel("Six Shooter version:", metadata_widget);
         six_shooter_vlabel->setSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
         metadata_layout->addWidget(six_shooter_vlabel, 0, 0);
-        auto *six_shooter_version = new QLabel("<b>0.1.5.0</b>", metadata_widget);
+        auto *six_shooter_version = new QLabel("<b>0.1.6.0</b>", metadata_widget);
         metadata_layout->addWidget(six_shooter_version, 0, 1);
         
         // Show invader version

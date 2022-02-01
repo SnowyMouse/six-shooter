@@ -8,15 +8,15 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "Comments",         "Halo: Combat Evolved tag editor"
+            VALUE "Comments",         "Halo: Combat Evolved tag toolkit"
             VALUE "CompanyName",      "Snowy Mouse"
-            VALUE "FileDescription",  "Halo: Combat Evolved tag editor"
-            VALUE "FileVersion",      "0.1.5.0"
+            VALUE "FileDescription",  "Halo: Combat Evolved tag toolkit"
+            VALUE "FileVersion",      "0.1.6.0"
             VALUE "InternalName",     "six-shooter"
             VALUE "OriginalFilename", "six-shooter.exe"
             VALUE "ProductName",      "six-shooter"
-            VALUE "ProductVersion",   "0.1.5.0"
-            VALUE "LegalCopyright",   "'20 Snowy Mouse"
+            VALUE "ProductVersion",   "0.1.6.0"
+            VALUE "LegalCopyright",   "'20 - '22 Snowy Mouse"
         END
     END
     BLOCK "VarFileInfo"
