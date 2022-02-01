@@ -32,13 +32,7 @@ namespace SixShooter {
             "Basic (fixes common issues)",
             19,
             "invader-bludgeon",
-            { "--type", "invalid-reference-classes", "--type", "excessive-script-nodes", "--type", "missing-script-source", "--type", "invalid-model-markers", "--type", "nonnormal-vectors", "--type", "invalid-strings", "--type", "invalid-indices", "--type", "invalid-enums", "--type", "out-of-range", "--all" }
-        },
-        {
-            "Sounds (fixes issues with some sounds - slow if on a toaster)",
-            3,
-            "invader-bludgeon",
-            { "--type", "incorrect-sound-buffer", "--all" }
+            { "--type", "invalid-reference-classes", "--type", "incorrect-sound-buffer", "--type", "missing-script-source", "--type", "invalid-model-markers", "--type", "nonnormal-vectors", "--type", "invalid-strings", "--type", "invalid-indices", "--type", "invalid-enums", "--type", "out-of-range", "--all" }
         },
         {
             "Change model references to gbxmodel (base HEK tags need it)",
