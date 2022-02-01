@@ -30,9 +30,20 @@ namespace SixShooter {
     static const BludgeonLevel levels[] = {
         {
             "Basic (fixes common issues)",
-            19,
+            21,
             "invader-bludgeon",
-            { "--type", "invalid-reference-classes", "--type", "incorrect-sound-buffer", "--type", "missing-script-source", "--type", "invalid-model-markers", "--type", "nonnormal-vectors", "--type", "invalid-strings", "--type", "invalid-indices", "--type", "invalid-enums", "--type", "out-of-range", "--all" }
+            { "--type", "invalid-reference-classes", 
+              "--type", "incorrect-sound-buffer",
+              "--type", "missing-script-source",
+              "--type", "invalid-model-markers",
+              "--type", "nonnormal-vectors",
+              "--type", "invalid-strings",
+              "--type", "invalid-indices",
+              "--type", "invalid-enums",
+              "--type", "out-of-range",
+              "--type", "broken-lens-flare-function-scale",
+              "--all"
+            }
         },
         {
             "Change model references to gbxmodel (base HEK tags need it)",
