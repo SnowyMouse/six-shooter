@@ -39,8 +39,7 @@ namespace SixShooter {
               "--type", "invalid-enums",
               "--type", "out-of-range",
               "--type", "broken-lens-flare-function-scale",
-              "--type", "mismatched-sound-enums",
-              "--all"
+              "--type", "mismatched-sound-enums"
             }
         },
         {
@@ -56,12 +55,12 @@ namespace SixShooter {
         {
             "Clean up (strip unused data - useful if modding Halo: CEA with official tools)",
             "invader-strip",
-            { "--all" }
+            {  }
         },
         {
             "Exodia (bludgeon everything - slow if on a toaster)",
             "invader-bludgeon",
-            { "--type", "everything", "--all" }
+            { "--type", "everything" }
         }
     };
     
