@@ -39,6 +39,7 @@ namespace SixShooter {
               "--type", "invalid-enums",
               "--type", "out-of-range",
               "--type", "broken-lens-flare-function-scale",
+              "--type", "mismatched-sound-enums",
               "--all"
             }
         },
