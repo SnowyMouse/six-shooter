@@ -22,7 +22,6 @@
 namespace SixShooter {
     struct BludgeonLevel {
         const char *name;
-        std::size_t arguments_count = 0;
         const char *command;
         const char *arguments[32];
     };
@@ -30,7 +29,6 @@ namespace SixShooter {
     static const BludgeonLevel levels[] = {
         {
             "Basic (fixes common issues)",
-            21,
             "invader-bludgeon",
             { "--type", "invalid-reference-classes", 
               "--type", "incorrect-sound-buffer",
@@ -47,25 +45,21 @@ namespace SixShooter {
         },
         {
             "Change model references to gbxmodel (base HEK tags need it)",
-            5,
             "invader-refactor",
             { "--mode", "no-move", "--class", "model", "gbxmodel" }
         },
         {
             "Change gbxmodel references to model (Xbox porting)",
-            5,
             "invader-refactor",
             { "--mode", "no-move", "--class", "gbxmodel", "model" }
         },
         {
             "Clean up (strip unused data - useful if modding Halo: CEA with official tools)",
-            1,
             "invader-strip",
             { "--all" }
         },
         {
             "Exodia (bludgeon everything - slow if on a toaster)",
-            3,
             "invader-bludgeon",
             { "--type", "everything", "--all" }
         }
@@ -148,8 +142,11 @@ namespace SixShooter {
         // Set arguments
         QStringList arguments;
         arguments << "--tags" << this->tags->currentText();
-        for(std::size_t i = 0; i < more_arguments.arguments_count; i++) {
-            arguments << more_arguments.arguments[i];
+        for(auto &i : more_arguments.arguments) {
+            if(i == nullptr) {
+                break;
+            }
+            arguments << i;
         }
         
         // Invoke
