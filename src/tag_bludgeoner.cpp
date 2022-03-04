@@ -30,8 +30,7 @@ namespace SixShooter {
         {
             "Basic (fixes common issues)",
             "invader-bludgeon",
-            { "--type", "invalid-reference-classes", 
-              "--type", "incorrect-sound-buffer",
+            { "--type", "incorrect-sound-buffer",
               "--type", "missing-script-source",
               "--type", "invalid-model-markers",
               "--type", "nonnormal-vectors",
