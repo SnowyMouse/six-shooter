@@ -152,7 +152,7 @@ namespace SixShooter {
             QProcess process;
             process.setProgram(this->executable_path("invader-info").string().c_str());
             QStringList arguments;
-            arguments << "--type" << "protection";
+            arguments << "--type" << "is_protected";
             arguments << qfd.selectedFiles()[0];
             process.setArguments(arguments);
             process.start();
