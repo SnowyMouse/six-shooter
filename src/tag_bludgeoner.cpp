@@ -39,28 +39,29 @@ namespace SixShooter {
               "--type", "invalid-enums",
               "--type", "out-of-range",
               "--type", "broken-lens-flare-function-scale",
-              "--type", "mismatched-sound-enums"
+              "--type", "mismatched-sound-enums",
+              "--batch", "*"
             }
         },
         {
             "Change model references to gbxmodel (base HEK tags need it)",
             "invader-refactor",
-            { "--mode", "no-move", "--class", "model", "gbxmodel" }
+            { "--mode", "no-move",  "--class", "model", "gbxmodel" }
         },
         {
             "Change gbxmodel references to model (Xbox porting)",
             "invader-refactor",
-            { "--mode", "no-move", "--class", "gbxmodel", "model" }
+            { "--mode", "no-move",  "--class", "gbxmodel", "model" }
         },
         {
             "Clean up (strip unused data - useful if modding Halo: CEA with official tools)",
             "invader-strip",
-            {  }
+            { "--batch", "*" }
         },
         {
             "Exodia (bludgeon everything - slow if on a toaster)",
             "invader-bludgeon",
-            { "--type", "everything" }
+            { "--type", "everything",  "--batch", "*" }
         }
     };
     
