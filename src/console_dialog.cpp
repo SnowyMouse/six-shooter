@@ -2,6 +2,7 @@
 
 #include <QGroupBox>
 #include <QVBoxLayout>
+#include <QProcessEnvironment>
 
 #include "console_dialog.hpp"
 #include "console_box.hpp"
@@ -37,6 +38,11 @@ namespace SixShooter {
     void ConsoleDialog::attach_to_process(QProcess *process) {
         this->stdout_box->attach_to_process(process, ConsoleBox::StandardOutput);
         this->stderr_box->attach_to_process(process, ConsoleBox::StandardError);
+
+        // Have colors always on
+        auto env = process->processEnvironment();
+        env.insert("INVADER_FORCE_COLORS", "1");
+        process->setProcessEnvironment(env);
     }
     
     QWidget *ConsoleDialog::get_console_widget() {
