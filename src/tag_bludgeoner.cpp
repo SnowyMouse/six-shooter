@@ -46,12 +46,12 @@ namespace SixShooter {
         {
             "Change model references to gbxmodel (base HEK tags need it)",
             "invader-refactor",
-            { "--mode", "no-move",  "--class", "model", "gbxmodel" }
+            { "--mode", "no-move",  "--groups", "model", "gbxmodel" }
         },
         {
             "Change gbxmodel references to model (Xbox porting)",
             "invader-refactor",
-            { "--mode", "no-move",  "--class", "gbxmodel", "model" }
+            { "--mode", "no-move",  "--groups", "gbxmodel", "model" }
         },
         {
             "Clean up (strip unused data - useful if modding Halo: CEA with official tools)",
