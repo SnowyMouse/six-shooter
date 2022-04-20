@@ -42,6 +42,11 @@ namespace SixShooter {
         {"Always index (Custom Edition only)", "always"}
     };
     
+    static const char *script_source_type[][2] = {
+        {"Data directory", "data"},
+        {"Scenario tag", "tags"}
+    };
+    
     MapBuilder::MapBuilder(const MainWindow *main_window) : main_window(main_window) {
         auto *main_layout = new QHBoxLayout(this);
         this->setWindowTitle("Build a map - Six Shooter");
@@ -123,25 +128,33 @@ namespace SixShooter {
             options_main_layout->addWidget((this->build_string = new QLineEdit(options_widget)), 7, 1);
             options_main_layout->addWidget((this->dummy_build_string = new QLineEdit(options_widget)), 7, 1);
             
+            // Source data
+            this->script_source = new QComboBox(options_widget);
+            for(auto &i : script_source_type) {
+                this->script_source->addItem(i[0]);
+            }
+            options_main_layout->addWidget(new QLabel("Script source:", options_widget), 8, 0);
+            options_main_layout->addWidget(this->script_source, 8, 1);
+            
             // Use CEA things
-            options_main_layout->addWidget((this->anniversary_label = new QLabel("Enable \"anniversary\" mode:", options_widget)), 8, 0);
-            options_main_layout->addWidget((this->anniversary = new QCheckBox(options_widget)), 8, 1);
+            options_main_layout->addWidget((this->anniversary_label = new QLabel("Enable \"anniversary\" mode:", options_widget)), 9, 0);
+            options_main_layout->addWidget((this->anniversary = new QCheckBox(options_widget)), 9, 1);
             
             // Automatically forge tag indices
-            options_main_layout->addWidget((this->auto_forge_label = new QLabel("Auto-forge tag indices:", options_widget)), 9, 0);
-            options_main_layout->addWidget((this->auto_forge = new QCheckBox(options_widget)), 9, 1);
+            options_main_layout->addWidget((this->auto_forge_label = new QLabel("Auto-forge tag indices:", options_widget)), 10, 0);
+            options_main_layout->addWidget((this->auto_forge = new QCheckBox(options_widget)), 10, 1);
             
             // Tag space
-            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 10, 0);
-            options_main_layout->addWidget((this->optimize = new QCheckBox(options_widget)), 10, 1);
+            options_main_layout->addWidget(new QLabel("Optimize tag space:", options_widget), 11, 0);
+            options_main_layout->addWidget((this->optimize = new QCheckBox(options_widget)), 11, 1);
             
             // File size
-            options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 11, 0);
-            options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 11, 1);
+            options_main_layout->addWidget(new QLabel("Bypass file size limits:", options_widget), 12, 0);
+            options_main_layout->addWidget((this->bypass_file_size_limits = new QCheckBox(options_widget)), 12, 1);
             
             // Pedantic warnings
-            options_main_layout->addWidget(new QLabel("Hide pedantic warnings:", options_widget), 12, 0);
-            options_main_layout->addWidget((this->hide_pedantic_warnings = new QCheckBox(options_widget)), 12, 1);
+            options_main_layout->addWidget(new QLabel("Hide pedantic warnings:", options_widget), 13, 0);
+            options_main_layout->addWidget((this->hide_pedantic_warnings = new QCheckBox(options_widget)), 13, 1);
             
             // Dummy widget (spacing)
             auto *dummy_widget = new QWidget(options_widget);
@@ -181,10 +194,15 @@ namespace SixShooter {
         for(auto &i : this->main_window->get_tags_directories()) {
             arguments << "--tags" << i.string().c_str();
         }
+
         
         SixShooterSettings settings;
         
+        arguments << "--data" << this->main_window->get_data_directory().string().c_str();
         arguments << "--maps" << this->main_window->get_maps_directory().string().c_str();
+
+        arguments << "--script-source" << script_source_type[this->script_source->currentIndex()][1];
+        settings.setValue("last_compiled_script_source", this->script_source->currentText());
         
         arguments << "--game-engine" << build_type[this->engine->currentIndex()][1];
         settings.setValue("last_compiled_scenario_engine", this->engine->currentText());
@@ -292,6 +310,7 @@ namespace SixShooter {
         this->engine->setCurrentText(settings.value("last_compiled_scenario_engine", QString("")).toString());
         this->compression->setCurrentText(settings.value("last_compiled_scenario_compressed", QString("")).toString());
         this->raw_data->setCurrentText(settings.value("last_compiled_scenario_raw_data", QString("")).toString());
+        this->script_source->setCurrentText(settings.value("last_compiled_script_source", QString("")).toString());
         this->index_path->setText(settings.value("last_compiled_scenario_index", QString("")).toString());
         this->crc32->setText(settings.value("last_compiled_scenario_crc32", QString("")).toString());
         this->scenario_path->setText(settings.value("last_compiled_scenario", QString("")).toString());

@@ -18,8 +18,15 @@ namespace SixShooter {
         
         std::filesystem::path executable_path(const char *executable) const;
         std::vector<std::filesystem::path> get_tags_directories() const;
-        std::filesystem::path get_maps_directory() const;
-        std::filesystem::path get_invader_directory() const;
+        const std::filesystem::path &get_maps_directory() const noexcept {
+            return this->maps_directory;
+        }
+        const std::filesystem::path &get_invader_directory() const noexcept {
+            return this->invader_path;
+        }
+        const std::filesystem::path &get_data_directory() const noexcept {
+            return this->data_directory;
+        }
         
         static bool invader_path_is_valid(const std::filesystem::path &path);
         
@@ -40,6 +47,7 @@ namespace SixShooter {
         
         std::filesystem::path invader_path;
         std::filesystem::path maps_directory;
+        std::filesystem::path data_directory;
         std::vector<std::filesystem::path> tags_directories;
         
         QPushButton *invader_edit_qt_button;

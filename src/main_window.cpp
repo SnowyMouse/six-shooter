@@ -226,12 +226,26 @@ namespace SixShooter {
             this->tags_directories.emplace_back(path);
         }
         
+        // Default maps?
         this->maps_directory = settings.value("maps_path").toString().toStdString();
         if(!std::filesystem::is_directory(this->maps_directory)) {
             #ifdef _WIN32
             if(this->maps_directory == "" && std::filesystem::is_directory("maps")) {
                 settings.setValue("maps_path", "maps");
                 this->maps_directory = settings.value("maps_path").toString().toStdString();
+            }
+            else
+            #endif
+            return false;
+        }
+        
+        // Default data?
+        this->data_directory = settings.value("data_path").toString().toStdString();
+        if(!std::filesystem::is_directory(this->data_directory)) {
+            #ifdef _WIN32
+            if(this->maps_directory == "" && std::filesystem::is_directory("data")) {
+                settings.setValue("data_path", "data");
+                this->maps_directory = settings.value("data_path").toString().toStdString();
             }
             else
             #endif
@@ -281,14 +295,6 @@ namespace SixShooter {
     
     std::filesystem::path MainWindow::executable_path(const char *executable) const {
         return ::SixShooter::executable_path(this->invader_path, executable);
-    }
-    
-    std::filesystem::path MainWindow::get_maps_directory() const {
-        return this->maps_directory;
-    }
-    
-    std::filesystem::path MainWindow::get_invader_directory() const {
-        return this->invader_path;
     }
     
     void MainWindow::keyPressEvent(QKeyEvent *event) {

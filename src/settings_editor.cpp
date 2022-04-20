@@ -63,6 +63,9 @@ namespace SixShooter {
         this->maps = new Finder("Maps directory", this, "Please find your maps folder", main_window->get_maps_directory().string().c_str());
         main_layout->addWidget(this->maps);
         
+        this->data = new Finder("Data directory", this, "Please find your data folder", main_window->get_data_directory().string().c_str());
+        main_layout->addWidget(this->data);
+        
         auto *tags_box = new QGroupBox("Tags directories", this);
         auto *tags_box_layout = new QVBoxLayout(tags_box);
         this->tags = new QTableWidget(this);
@@ -184,6 +187,17 @@ namespace SixShooter {
             return;
         }
         
+        // Data path as well
+        auto data_path = this->data->path->text();
+        if(!std::filesystem::is_directory(data_path.toStdString())) {
+            QMessageBox qmd;
+            qmd.setWindowTitle("Path error");
+            qmd.setText("The data path does not point to a valid directory.");
+            qmd.setIcon(QMessageBox::Icon::Critical);
+            qmd.exec();
+            return;
+        }
+        
         if(this->tags_paths.size() == 0) {
             QMessageBox qmd;
             qmd.setWindowTitle("Path error");
@@ -210,6 +224,7 @@ namespace SixShooter {
         SixShooterSettings settings;
         settings.setValue("invader_path", invader_path);
         settings.setValue("maps_path", map_path);
+        settings.setValue("data_path", data_path);
         settings.setValue("tags_directories", tags_path);
         
         QDialog::accept();

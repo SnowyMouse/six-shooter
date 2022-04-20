@@ -34,6 +34,7 @@ namespace SixShooter {
         QCheckBox *bypass_file_size_limits;
         QCheckBox *hide_pedantic_warnings;
         QComboBox *raw_data;
+        QComboBox *script_source;
         QPushButton *build_button;
         QProcess *process = nullptr;
         QLineEdit *index_path;

@@ -24,6 +24,7 @@ namespace SixShooter {
         class Finder;
         Finder *invader;
         Finder *maps;
+        Finder *data;
         
         QTableWidget *tags;
         std::vector<std::filesystem::path> tags_paths;
