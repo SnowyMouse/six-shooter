@@ -32,18 +32,21 @@ add_executable(six-shooter
     src/universal.qrc
 )
 
+set(SIXSHOOTER_LIBRARIES Qt6::Widgets)
+
 if(WIN32)
     # Add dark theming and the Windows resource file
     target_sources(six-shooter PRIVATE src/windows.rc src/theme.cpp)
 
     # Don't spawn a CMD window when you open Six shooter
-    target_link_libraries(six-shooter -mwindows)
+    set(SIXSHOOTER_LIBRARIES ${SIXSHOOTER_LIBRARIES} -mwindows)
 
     # Required for FORTIFY_SOURCES
     if(MINGW)
-        target_link_libraries(six-shooter -lssp)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fstack-protector")
+        set(SIXSHOOTER_LIBRARIES ${SIXSHOOTER_LIBRARIES} ssp)
     endif()
 endif()
 
-target_link_libraries(six-shooter Qt6::Widgets)
+target_link_libraries(six-shooter ${SIXSHOOTER_LIBRARIES})
 target_include_directories(six-shooter PUBLIC ${Qt6Widgets_INCLUDE_DIRS})
