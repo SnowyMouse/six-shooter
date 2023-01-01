@@ -17,10 +17,10 @@ namespace SixShooter {
     ConsoleBox::ConsoleBox(QWidget *parent) : QTextEdit(parent) {
         this->setReadOnly(true);
         auto font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-        
+
         auto margins = this->contentsMargins();
         auto document_margin = this->document()->documentMargin();
-        
+
         this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
         this->setFont(font);
         this->setWordWrapMode(QTextOption::WrapMode::WrapAnywhere);
@@ -28,10 +28,15 @@ namespace SixShooter {
         auto *style = qApp->style();
         this->setFixedWidth(font_metrics.horizontalAdvance("It seems that this whole sentence is exactly eighty characters in string length.") + style->pixelMetric(QStyle::PM_ScrollBarExtent) + this->frameWidth() * 2 + margins.left() + margins.right() + document_margin * 2);
         this->setMinimumHeight(font_metrics.ascent() * 24 + this->frameWidth() * 2 + margins.top() + margins.bottom() + document_margin * 2);
-        
+
         this->setStyleSheet("QTextEdit { background-color: #000; color: " TEXT_COLOR ";}");
     }
-    
+
+    void ConsoleBox::reset_contents() {
+        this->html = {};
+        this->clear();
+    }
+
     void ConsoleBox::attach_to_process(QProcess *process, OutputChannel channel) {
         if(channel == OutputChannel::StandardError) {
             connect(process, &QProcess::readyReadStandardError, this, &ConsoleBox::on_standard_error);
@@ -39,10 +44,8 @@ namespace SixShooter {
         else if(channel == OutputChannel::StandardOutput) {
             connect(process, &QProcess::readyReadStandardOutput, this, &ConsoleBox::on_standard_output);
         }
-        
+
         this->process = process;
-        this->html = {};
-        this->clear();
     }
 
     static void vt100(QString &string) {
@@ -87,7 +90,7 @@ namespace SixShooter {
 
                     s += *next_char;
                 }
-                
+
                 return s;
             };
 
@@ -224,7 +227,7 @@ namespace SixShooter {
             string.replace(next_index, cursor - next_index, s);
         }
     }
-    
+
     static void clean_string(QString &string) {
         string.replace("\n", "<br/>");
         string.replace("\r", "");
@@ -233,23 +236,23 @@ namespace SixShooter {
         // Handle VT100 text colors
         vt100(string);
     }
-    
+
     void ConsoleBox::on_standard_output() {
         auto stdout_data = QString(this->process->readAllStandardOutput());
         clean_string(stdout_data);
-        
+
         this->html += (QString("<span style=\"color: " TEXT_COLOR "\">") + stdout_data + "</span>").toStdString();
-        
+
         this->setHtml(this->html.c_str());
         this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
     }
-    
+
     void ConsoleBox::on_standard_error() {
         auto stderr_data = QString(this->process->readAllStandardError());
         clean_string(stderr_data);
-        
+
         this->html += (QString("<span style=\"color: " TEXT_COLOR "\">") + stderr_data + "</span>").toStdString();
-        
+
         this->setHtml(this->html.c_str());
         this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
     }

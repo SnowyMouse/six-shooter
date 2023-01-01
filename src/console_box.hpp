@@ -15,16 +15,17 @@ namespace SixShooter {
             StandardOutput,
             StandardError
         };
-                
+
         ConsoleBox(QWidget *parent = nullptr);
         void attach_to_process(QProcess *process, OutputChannel channels);
-        
+        void reset_contents();
+
     private:
         void on_standard_output();
         void on_standard_error();
-        
+
         QProcess *process = nullptr;
-        
+
         std::string html;
     };
 }
