@@ -135,6 +135,8 @@ namespace SixShooter {
             this->steps.emplace_back(Step::CleanUpTags);
         }
 
+        this->tags_dir = this->tags->currentText();
+
         // Set up our process
         this->bludgeon_button->setEnabled(false);
         this->reset_contents();
@@ -157,7 +159,7 @@ namespace SixShooter {
 
         // Set arguments
         QStringList arguments;
-        arguments << "--tags" << this->tags->currentText();
+        arguments << "--tags" << this->tags_dir;
         for(auto &i : more_arguments.arguments) {
             if(i == nullptr) {
                 break;

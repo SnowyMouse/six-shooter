@@ -40,6 +40,8 @@ namespace SixShooter {
         TagBludgeoner(const MainWindow *main_window);
         const MainWindow *main_window;
 
+        QString tags_dir;
+
         QComboBox *tags;
         QComboBox *refactor_model_references;
         QPushButton *bludgeon_button;
