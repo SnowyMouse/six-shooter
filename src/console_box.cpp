@@ -229,6 +229,9 @@ namespace SixShooter {
     }
 
     static void clean_string(QString &string) {
+        string.replace("&", "&amp;");
+        string.replace("<", "&lt;");
+        string.replace(">", "&gt;");
         string.replace("\n", "<br/>");
         string.replace("\r", "");
         string.replace(" ", "&nbsp;");
