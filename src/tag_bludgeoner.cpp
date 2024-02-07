@@ -81,8 +81,8 @@ namespace SixShooter {
             options_main_layout->addWidget(new QLabel("Refactor model references:", options_widget), 4, 0);
             options_main_layout->addWidget(this->refactor_model_references = new QComboBox(options_widget), 4, 1);
             this->refactor_model_references->addItem("Do nothing");
-            this->refactor_model_references->addItem("Change model references to gbxmodel (base HEK tags need it)", static_cast<uint>(TagBludgeoner::Step::RefactorGbxmodelToModel));
-            this->refactor_model_references->addItem("Change gbxmodel references to model (Xbox porting)", static_cast<uint>(TagBludgeoner::Step::RefactorModelToGbxmodel));
+            this->refactor_model_references->addItem("Change model references to gbxmodel (base HEK tags need it)", static_cast<uint>(TagBludgeoner::Step::RefactorModelToGbxmodel));
+            this->refactor_model_references->addItem("Change gbxmodel references to model (Xbox porting)", static_cast<uint>(TagBludgeoner::Step::RefactorGbxmodelToModel));
 
             options_layout->addWidget(options_main_layout_widget);
 

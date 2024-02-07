@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 1 VERSIONINFO
-FILEVERSION      0,2,0,0
-PRODUCTVERSION   0,2,0,0
+FILEVERSION      0,2,1,0
+PRODUCTVERSION   0,2,1,0
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
@@ -11,12 +11,12 @@ BEGIN
             VALUE "Comments",         "Halo: Combat Evolved tag toolkit"
             VALUE "CompanyName",      "Snowy Mouse"
             VALUE "FileDescription",  "Halo: Combat Evolved tag toolkit"
-            VALUE "FileVersion",      "0.2.0.0"
+            VALUE "FileVersion",      "0.2.1.0"
             VALUE "InternalName",     "six-shooter"
             VALUE "OriginalFilename", "six-shooter.exe"
             VALUE "ProductName",      "six-shooter"
-            VALUE "ProductVersion",   "0.2.0.0"
-            VALUE "LegalCopyright",   "'20 - '22 Snowy Mouse"
+            VALUE "ProductVersion",   "0.2.1.0"
+            VALUE "LegalCopyright",   "'20 - '24 Snowy Mouse"
         END
     END
     BLOCK "VarFileInfo"
