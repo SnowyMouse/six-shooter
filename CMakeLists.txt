@@ -38,11 +38,14 @@ if(WIN32)
     # Add dark theming and the Windows resource file
     target_sources(six-shooter PRIVATE src/windows.rc src/theme.cpp)
 
-    # Don't spawn a CMD window when you open Six shooter
-    set(SIXSHOOTER_LIBRARIES ${SIXSHOOTER_LIBRARIES} -mwindows)
-
-    # Required for FORTIFY_SOURCES
     if(MINGW)
+        # Don't spawn a CMD window when you open Six shooter
+        set(SIXSHOOTER_LIBRARIES ${SIXSHOOTER_LIBRARIES} -mwindows)
+
+        # We don't want to depend on these on Windows.
+        set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++ -lwinpthread")
+
+        # Required for FORTIFY_SOURCES
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fstack-protector")
         set(SIXSHOOTER_LIBRARIES ${SIXSHOOTER_LIBRARIES} ssp)
     endif()
