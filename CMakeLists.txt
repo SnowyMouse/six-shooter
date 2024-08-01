@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.12)
 
 # Project name - You should change this if you're making a fork
 project("Six Shooter"
-    VERSION 0.2.1
+    VERSION 0.2.2
     DESCRIPTION "GUI frontend for Invader tools"
     LANGUAGES C CXX
 )
@@ -47,7 +47,7 @@ if(WIN32)
 
         # Required for FORTIFY_SOURCES
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fstack-protector")
-        set(SIXSHOOTER_LIBRARIES ${SIXSHOOTER_LIBRARIES} ssp)
+        set(SIXSHOOTER_LIBRARIES ${SIXSHOOTER_LIBRARIES})
     endif()
 endif()
 
