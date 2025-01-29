@@ -215,8 +215,9 @@ namespace SixShooter {
             options.setIcon(QMessageBox::Icon::Question);
             options.setText(QString("You are about to extract ") + data.toString());
             options.setStandardButtons(QMessageBox::StandardButton::Cancel);
+            
             options.addButton("Extract (single tag)", QMessageBox::ButtonRole::AcceptRole);
-            options.addButton("Extract (recursive)", QMessageBox::ButtonRole::AcceptRole);
+            auto *recursive = options.addButton("Extract (recursive)", QMessageBox::ButtonRole::AcceptRole);
 
             auto *overwrite = new QCheckBox("Overwrite tag(s) on disk (if present)", &options);
             options.setCheckBox(overwrite);
@@ -229,7 +230,7 @@ namespace SixShooter {
 
             std::vector<std::string> filters;
             filters.emplace_back(data.toString().toStdString());
-            this->extract_map(filters, r == 1, overwrite->isChecked());
+            this->extract_map(filters, options.clickedButton() == recursive, overwrite->isChecked());
         }
     }
 
